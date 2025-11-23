@@ -459,6 +459,7 @@ if (!is_path_safe($path, $base_dir) || !$A[4]($path)) {
     $path_encoded = E($base_dir);
 }
 
+$is_writable = is_writable($path);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = '';
@@ -736,6 +737,7 @@ if ($files !== false) {
     });
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1318,6 +1320,12 @@ if ($files !== false) {
             <div><strong>PHP:</strong> <?php echo htmlspecialchars($php_version); ?></div>
             <div><strong>Server:</strong> <?php echo htmlspecialchars($server_software); ?></div>
             <div><strong>User:</strong> <?php echo htmlspecialchars($current_user); ?></div>
+            <div>
+                <strong>Writeable:</strong>
+                <span style="color: <?php echo $is_writable ? '#4caf50' : '#f44336'; ?>; font-weight: bold;">
+                    <?php echo $is_writable ? 'Yes' : 'No'; ?>
+                </span>
+            </div>
         </section>
 
         <section class="features-menu" aria-label="File Manager Features Menu">
@@ -1382,7 +1390,10 @@ if ($files !== false) {
                             echo '<tr>';
                             // >>>>>>> MODIFIKASI: Menambahkan data-action pada tautan file <<<<<<<
                             echo '<td class="file-name"><a href="' . htmlspecialchars($link) . '" class="' . $link_class . '" ' . $data_action . ' title="' . htmlspecialchars($file) . '"><i class="' . $icon_class . '"></i>' . htmlspecialchars($file) . '</a></td>';
-                            echo '<td>' . ($isDir ? 'Directory' : 'File') . '</td>';
+                            $is_writeable_item = is_writable($fullPath);
+                            $type_color = $is_writeable_item ? '#4caf50' : '#f44336';
+                            $type_text = $isDir ? 'Directory' : 'File';
+                            echo '<td style="color: ' . $type_color . '; font-weight: bold;">' . $type_text . '</td>';
                             echo '<td>' . $size . '</td>';
                             echo '<td>' . $perms . '</td>';
                             echo '<td>';
