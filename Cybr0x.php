@@ -1,6 +1,6 @@
 <?php
 
-$password = "indomaret";
+$password = "Aa112244Cybr0x";
 
 session_start();
 error_reporting(0);
